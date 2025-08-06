@@ -42,6 +42,10 @@ bin/rails c                # Shorthand
 
 # Background jobs (Solid Queue)
 bin/jobs                   # Start job worker in development
+
+# Debugging
+bin/rails routes            # Show all routes
+bin/rails routes -g users   # Grep routes
 ```
 
 ## Architecture & Structure
@@ -69,6 +73,7 @@ bin/jobs                   # Start job worker in development
   - One failure test is enough
   - Use real-world fixtures
 - **Test Helper**: Keep under 25 lines (currently 15)
+- **WebMock**: If used, blocks all HTTP except localhost
 
 ## Important Project-Specific Notes
 
@@ -99,6 +104,62 @@ bin/jobs                   # Start job worker in development
 2. For authorization: Set up CanCanCan abilities
 3. For API features: Consider adding `rack-cors` if needed
 4. For production: Consider switching to PostgreSQL
+
+## Configuration Patterns
+
+### External Services
+Use this pattern for all external service configurations:
+```ruby
+# config/initializers/service_name.rb
+Rails.configuration.x.service_name = Rails.application.config_for(:service_name)
+
+# config/service_name.yml
+default: &default
+  api_key: <%= Rails.application.credentials.dig(:service_name, :api_key) %>
+
+development:
+  <<: *default
+
+production:
+  <<: *default
+```
+
+### API Client Patterns
+When building API clients, consider:
+- Circuit breakers for fault tolerance
+- Exponential backoff retry logic
+- Rate limiting (Redis-based)
+- Comprehensive error handling
+- Request/response middleware
+- Metrics tracking
+
+## Debugging Tips
+
+```ruby
+# Quick verification in console
+User.last                    # Check latest record
+Model.pluck(:id, :name)     # Quick data overview
+
+# Check credentials
+Rails.application.credentials.dig(:service, :api_key).present?
+
+# Environment config
+Rails.configuration.x       # View all custom configs
+```
+
+## Common Pitfalls
+
+1. **YAML Arrays**: Use simple arrays, not hashes with boolean keys
+2. **JSON Parsing**: Some APIs wrap JSON in markdown code blocks
+3. **External HTTP**: WebMock blocks all except localhost
+4. **Credentials**: Always use `rails credentials:edit` for secrets
+
+## Source Control
+
+Never commit:
+- CURRENT_PLAN.md or similar planning files
+- .env files with actual values (use .env.example)
+- Any temporary debugging or personal notes
 
 ## Deployment
 
