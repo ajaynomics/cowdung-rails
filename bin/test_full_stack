@@ -1,0 +1,96 @@
+#!/usr/bin/env ruby
+# Test the full Rails + Vite stack
+
+require 'net/http'
+require 'json'
+
+puts "🚀 Testing Rails + Vite Integration\n\n"
+
+# Start servers
+puts "Starting servers..."
+pid = spawn("bin/dev", out: "/tmp/cowdung-test.log", err: "/tmp/cowdung-test-err.log")
+
+# Wait for servers to start
+puts "Waiting for servers to start..."
+sleep 8
+
+begin
+  # Test Rails health
+  puts "\n1️⃣ Testing Rails server on port 3000..."
+  rails_health = Net::HTTP.get_response(URI("http://localhost:3000/up"))
+  if rails_health.code == "200"
+    puts "   ✅ Rails server is healthy"
+  else
+    puts "   ❌ Rails server failed: #{rails_health.code}"
+  end
+
+  # Test Vite
+  puts "\n2️⃣ Testing Vite server on port 3036..."
+  vite_response = Net::HTTP.get_response(URI("http://localhost:3036/vite-dev/"))
+  if vite_response.code == "200"
+    puts "   ✅ Vite server is running"
+  else
+    puts "   ❌ Vite server failed: #{vite_response.code}"
+  end
+
+  # Test welcome page
+  puts "\n3️⃣ Testing welcome page..."
+  welcome = Net::HTTP.get(URI("http://localhost:3000/"))
+  
+  checks = {
+    "Page loads" => welcome.include?("Cowdung Rails"),
+    "Vite client injected" => welcome.include?("/@vite/client"),
+    "JavaScript loaded" => welcome.include?("application.js"),
+    "CSS loaded" => welcome.include?("application.css"),
+    "Tailwind classes present" => welcome.include?("bg-gray-100"),
+    "Stimulus controller present" => welcome.include?("data-controller=\"hello\"")
+  }
+  
+  checks.each do |check, passed|
+    puts "   #{passed ? '✅' : '❌'} #{check}"
+  end
+
+  # Test asset loading
+  puts "\n4️⃣ Testing asset loading..."
+  
+  # Extract JS URL
+  js_match = welcome.match(/src="([^"]*application[^"]*\.js)"/)
+  if js_match
+    js_url = "http://localhost:3000#{js_match[1]}"
+    js_response = Net::HTTP.get_response(URI(js_url))
+    if js_response.code == "200" && js_response.body.include?("@hotwired/turbo")
+      puts "   ✅ JavaScript bundle loads correctly"
+    else
+      puts "   ❌ JavaScript bundle failed to load"
+    end
+  else
+    puts "   ❌ Could not find JavaScript URL"
+  end
+
+  # Extract CSS URL
+  css_match = welcome.match(/href="([^"]*application[^"]*\.css)"/)
+  if css_match
+    css_url = "http://localhost:3000#{css_match[1]}"
+    css_response = Net::HTTP.get_response(URI(css_url))
+    if css_response.code == "200" && css_response.body.include?("tailwindcss")
+      puts "   ✅ CSS bundle loads correctly"
+    else
+      puts "   ❌ CSS bundle failed to load"
+    end
+  else
+    puts "   ❌ Could not find CSS URL"
+  end
+
+  puts "\n" + "="*50
+  puts "Test complete! Check /tmp/cowdung-test*.log for server logs."
+
+rescue => e
+  puts "\n❌ Error during testing: #{e.message}"
+  puts e.backtrace.first(5)
+ensure
+  # Cleanup
+  Process.kill("TERM", pid) rescue nil
+  sleep 1
+  system("pkill -f 'rails s' 2>/dev/null")
+  system("pkill -f 'vite' 2>/dev/null")
+end

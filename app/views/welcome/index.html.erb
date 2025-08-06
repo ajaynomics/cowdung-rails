@@ -1,0 +1,54 @@
+<div class="min-h-screen bg-gray-100 py-6 flex flex-col justify-center sm:py-12">
+  <div class="relative py-3 sm:max-w-xl sm:mx-auto">
+    <div class="absolute inset-0 bg-gradient-to-r from-cyan-400 to-light-blue-500 shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 sm:rounded-3xl"></div>
+    <div class="relative px-4 py-10 bg-white shadow-lg sm:rounded-3xl sm:p-20">
+      <div class="max-w-md mx-auto">
+        <div>
+          <h1 class="text-2xl font-semibold">Cowdung Rails is Working!</h1>
+        </div>
+        <div class="divide-y divide-gray-200">
+          <div class="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
+            <p>Your Rails 8 app with Vite is up and running.</p>
+            
+            <div class="space-y-4">
+              <div class="p-4 bg-green-100 rounded-lg">
+                <h2 class="font-bold text-green-800">✓ Vite</h2>
+                <p class="text-sm text-green-600">Frontend build tool is active</p>
+              </div>
+              
+              <div class="p-4 bg-blue-100 rounded-lg">
+                <h2 class="font-bold text-blue-800">✓ Tailwind CSS v4</h2>
+                <p class="text-sm text-blue-600">Utility-first CSS framework loaded</p>
+              </div>
+              
+              <div class="p-4 bg-purple-100 rounded-lg">
+                <h2 class="font-bold text-purple-800">✓ Stimulus</h2>
+                <div data-controller="hello" class="text-sm text-purple-600">
+                  <span data-hello-target="output">Stimulus controller will replace this text</span>
+                </div>
+              </div>
+              
+              <div class="p-4 bg-indigo-100 rounded-lg">
+                <h2 class="font-bold text-indigo-800">✓ Turbo</h2>
+                <p class="text-sm text-indigo-600">
+                  <%= link_to "Test Turbo Navigation", welcome_index_path, 
+                      class: "underline hover:text-indigo-800",
+                      data: { turbo_frame: "_top" } %>
+                </p>
+              </div>
+            </div>
+            
+            <div class="pt-6 text-base leading-6 font-bold sm:text-lg sm:leading-7">
+              <p>Next steps:</p>
+              <ul class="list-disc list-inside text-sm text-gray-600 mt-2">
+                <li>Start building your application</li>
+                <li>Add more Stimulus controllers</li>
+                <li>Configure additional services</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

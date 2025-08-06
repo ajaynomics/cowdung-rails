@@ -1,0 +1,199 @@
+#!/usr/bin/env ruby
+# Comprehensive validation script for the Rails + Vite setup
+
+require 'net/http'
+require 'timeout'
+require 'open3'
+
+class SetupValidator
+  def self.run
+    new.run_all_checks
+  end
+
+  def initialize
+    @errors = []
+    @warnings = []
+  end
+
+  def run_all_checks
+    puts "🔍 Starting comprehensive validation...\n\n"
+
+    check_dependencies
+    check_file_structure
+    check_server_startup
+    check_asset_compilation
+    
+    print_results
+  end
+
+  private
+
+  def check_dependencies
+    section "Checking Dependencies"
+    
+    # Check Ruby version
+    ruby_version = RUBY_VERSION
+    check "Ruby version >= 3.0", ruby_version >= "3.0"
+    
+    # Check Rails
+    rails_version = `bin/rails -v`.strip
+    check "Rails installed", rails_version.include?("Rails")
+    
+    # Check Node
+    node_version = `node -v 2>&1`.strip
+    check "Node.js installed", node_version.start_with?("v")
+    
+    # Check Yarn
+    yarn_version = `yarn -v 2>&1`.strip
+    check "Yarn installed", yarn_version.match?(/\d+\.\d+\.\d+/)
+    
+    # Check bundle
+    bundle_check = system("bundle check > /dev/null 2>&1")
+    check "Bundle dependencies satisfied", bundle_check
+    
+    # Check npm packages
+    check "NPM packages installed", Dir.exist?("node_modules")
+    check "@hotwired/turbo-rails installed", Dir.exist?("node_modules/@hotwired/turbo-rails")
+    check "@hotwired/stimulus installed", Dir.exist?("node_modules/@hotwired/stimulus")
+    check "@tailwindcss/vite installed", Dir.exist?("node_modules/@tailwindcss/vite")
+  end
+
+  def check_file_structure
+    section "Checking File Structure"
+    
+    files_to_check = {
+      "Procfile.dev" => "Procfile.dev",
+      "bin/dev" => "bin/dev",
+      "Vite config" => "vite.config.mts",
+      "Vite Rails config" => "config/vite.json",
+      "Package.json" => "package.json",
+      "Frontend directory" => "app/frontend",
+      "JavaScript entrypoint" => "app/frontend/entrypoints/application.js",
+      "CSS entrypoint" => "app/frontend/entrypoints/application.css",
+      "Main JS file" => "app/frontend/javascript/application.js",
+      "Stimulus setup" => "app/frontend/javascript/controllers/application.js",
+      "Controller index" => "app/frontend/javascript/controllers/index.js",
+      "Hello controller" => "app/frontend/javascript/controllers/hello_controller.js",
+      "Tailwind CSS" => "app/frontend/stylesheets/application.tailwind.css"
+    }
+    
+    files_to_check.each do |name, path|
+      check "#{name} exists", File.exist?(path)
+    end
+    
+    # Check file contents
+    procfile_content = File.read("Procfile.dev") rescue ""
+    check "Procfile.dev has web process", procfile_content.include?("web:")
+    check "Procfile.dev has vite process", procfile_content.include?("vite:")
+    
+    bin_dev_content = File.read("bin/dev") rescue ""
+    check "bin/dev uses foreman", bin_dev_content.include?("foreman")
+    check "bin/dev is executable", File.executable?("bin/dev")
+  end
+
+  def check_server_startup
+    section "Checking Server Startup"
+    
+    # Start servers in background
+    puts "  Starting servers (this may take a few seconds)..."
+    
+    # Kill any existing servers
+    system("pkill -f 'rails server' 2>/dev/null")
+    system("pkill -f 'vite' 2>/dev/null")
+    sleep 1
+    
+    # Start bin/dev in background
+    dev_process = spawn("bin/dev", out: "/tmp/cowdung-dev.log", err: "/tmp/cowdung-dev-err.log")
+    
+    # Give servers time to start
+    sleep 5
+    
+    begin
+      # Check Rails server
+      rails_response = check_http("http://localhost:3000/up")
+      check "Rails server responds on port 3000", rails_response
+      
+      # Check Vite server
+      vite_response = check_http("http://localhost:3036")
+      check "Vite server responds on port 3036", vite_response
+      
+      # Check welcome page
+      welcome_response = fetch_http("http://localhost:3000")
+      check "Welcome page loads", welcome_response.include?("Cowdung Rails")
+      check "Vite client injected", welcome_response.include?("/@vite/client")
+      check "JavaScript tag present", welcome_response.include?("application.js")
+      check "CSS tag present", welcome_response.include?("application.css")
+      
+    ensure
+      # Clean up
+      Process.kill("TERM", dev_process) rescue nil
+      system("pkill -f 'rails server' 2>/dev/null")
+      system("pkill -f 'vite' 2>/dev/null")
+    end
+  end
+
+  def check_asset_compilation
+    section "Checking Asset Compilation"
+    
+    # Test Vite build
+    build_output, build_status = Open3.capture2e("bin/vite build")
+    check "Vite build succeeds", build_status.success?
+    check "JavaScript compiled", build_output.include?("application-")
+    check "CSS compiled", build_output.include?(".css")
+    
+    # Clean up build artifacts
+    system("rm -rf public/vite")
+  end
+
+  def check_http(url)
+    uri = URI(url)
+    begin
+      response = Net::HTTP.get_response(uri)
+      response.code.to_i < 400
+    rescue => e
+      false
+    end
+  end
+
+  def fetch_http(url)
+    uri = URI(url)
+    begin
+      Net::HTTP.get(uri)
+    rescue => e
+      ""
+    end
+  end
+
+  def section(title)
+    puts "#{title}:"
+    puts "-" * 40
+  end
+
+  def check(description, passed)
+    if passed
+      puts "  ✅ #{description}"
+    else
+      puts "  ❌ #{description}"
+      @errors << description
+    end
+  end
+
+  def print_results
+    puts "\n" + "=" * 40
+    
+    if @errors.empty?
+      puts "✅ All checks passed! Your setup is working correctly."
+      puts "\nTo start development:"
+      puts "  bin/dev"
+      puts "\nThen visit http://localhost:3000"
+    else
+      puts "❌ Setup validation failed!"
+      puts "\nErrors found:"
+      @errors.each { |error| puts "  - #{error}" }
+      puts "\nPlease fix these issues before proceeding."
+      exit 1
+    end
+  end
+end
+
+SetupValidator.run
