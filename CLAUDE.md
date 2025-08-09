@@ -12,6 +12,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - If a test fails, FIX THE CODE or FIX THE TEST - don't skip it
 - Tests must actually test real behavior, not just assert success
 - Every test must provide value and catch real regressions
+- A test that passes when the feature is broken is worse than no test
+- NEVER use mocking frameworks (mocha, rspec-mocks) - use real objects
+- Don't assume things won't work in test - investigate and fix the root cause
+- If external services are needed in tests, make them work, don't fake them
 
 ## Project Overview
 

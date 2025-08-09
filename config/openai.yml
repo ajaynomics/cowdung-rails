@@ -8,7 +8,6 @@ development:
 
 test:
   <<: *default
-  api_key: test-key-for-tests
 
 production:
   <<: *default
