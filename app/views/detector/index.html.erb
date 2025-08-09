@@ -1,23 +1,26 @@
-<div class="min-h-screen bg-gray-50" data-controller="audio-recorder">
+<div class="min-h-screen bs-gradient-bg" data-controller="audio-recorder">
   <div class="container mx-auto px-4 py-8 max-w-4xl">
-    <h1 class="text-4xl font-bold mb-8 text-center">Bullshit Detector</h1>
+    <div class="text-center mb-8">
+      <h1 class="text-5xl font-bold bg-gradient-to-r from-blue-600 to-red-600 bg-clip-text text-transparent">Bullshit Detector</h1>
+      <p class="text-gray-600 mt-2">Real-time truth verification powered by AI</p>
+    </div>
     
-    <div class="bg-white rounded-lg shadow-lg p-6 md:p-8">
+    <div class="bg-white rounded-xl shadow-lg p-6 md:p-8 card-hover">
       <!-- Connection Status -->
       <div class="mb-6 flex items-center justify-between">
         <div class="flex items-center space-x-4">
           <div class="flex items-center space-x-2">
-            <div data-audio-recorder-target="connectionIndicator" class="w-3 h-3 bg-gray-400 rounded-full"></div>
-            <span data-audio-recorder-target="connectionStatus" class="text-sm text-gray-600">Disconnected</span>
+            <div data-audio-recorder-target="connectionIndicator" class="w-3 h-3 bg-gray-400 rounded-full transition-colors duration-300"></div>
+            <span data-audio-recorder-target="connectionStatus" class="text-sm text-gray-600 font-medium">Disconnected</span>
           </div>
           <div class="flex items-center space-x-2 hidden" data-audio-recorder-target="bsIndicator">
-            <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-            <span class="text-sm text-gray-600">BS Detection Active</span>
+            <div class="w-3 h-3 bg-green-500 rounded-full recording-pulse"></div>
+            <span class="text-sm text-green-600 font-medium">BS Detection Active</span>
           </div>
         </div>
         <button data-action="click->audio-recorder#toggleMute"
                 data-audio-recorder-target="muteBtn"
-                class="text-gray-500 hover:text-gray-700 transition-colors">
+                class="text-gray-500 hover:text-gray-700 transition-all duration-200 p-2 rounded-lg hover:bg-gray-100">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
           </svg>
@@ -27,58 +30,77 @@
       <!-- Audio Visualizer -->
       <div class="mb-8">
         <canvas data-audio-recorder-target="visualizer" 
-                class="w-full h-32 bg-gray-100 rounded-lg"></canvas>
+                class="w-full h-32 audio-visualizer"></canvas>
       </div>
       
       <!-- Main Controls -->
       <div class="text-center mb-6">
         <button data-action="click->audio-recorder#start"
                 data-audio-recorder-target="startBtn"
-                class="bg-blue-500 hover:bg-blue-600 text-white font-bold px-8 py-4 rounded-lg text-lg transition-colors">
-          🎙️ Start Recording
+                class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold px-10 py-4 rounded-xl text-lg shadow-lg btn-press">
+          <span class="flex items-center space-x-3">
+            <span class="text-2xl">🎙️</span>
+            <span>Start Recording</span>
+          </span>
         </button>
         
         <button data-action="click->audio-recorder#stop"
                 data-audio-recorder-target="stopBtn"
-                class="bg-red-500 hover:bg-red-600 text-white font-bold px-8 py-4 rounded-lg text-lg transition-colors hidden">
-          🛑 Stop Recording
+                class="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold px-10 py-4 rounded-xl text-lg shadow-lg btn-press hidden">
+          <span class="flex items-center space-x-3">
+            <span class="text-2xl">🛑</span>
+            <span>Stop Recording</span>
+          </span>
         </button>
       </div>
       
       <!-- Status Display -->
       <div data-audio-recorder-target="status" 
-           class="text-center text-gray-600 mb-4">
-        Ready to start recording
+           class="text-center text-gray-600 mb-4 font-medium transition-all duration-300">
+        <span class="inline-flex items-center space-x-2">
+          <span class="w-2 h-2 bg-gray-400 rounded-full"></span>
+          <span>Ready to start recording</span>
+        </span>
       </div>
       
       <!-- Recording Indicator -->
       <div data-audio-recorder-target="indicator" 
            class="hidden text-center">
-        <div class="inline-flex items-center space-x-2">
-          <div class="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-          <span class="text-red-600 font-medium">Recording...</span>
+        <div class="inline-flex items-center space-x-3 bg-red-50 px-4 py-2 rounded-full">
+          <div class="w-3 h-3 bg-red-500 rounded-full recording-pulse"></div>
+          <span class="text-red-600 font-semibold">Recording in progress</span>
+          <span data-audio-recorder-target="recordingTime" class="text-red-500 font-mono text-sm">00:00</span>
         </div>
       </div>
       
       <!-- Permission Error Display -->
       <div data-audio-recorder-target="permissionError" 
-           class="hidden mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-        <h3 class="font-bold text-yellow-800 mb-2">🚫 Microphone Access Required</h3>
+           class="hidden mt-6 p-4 bg-yellow-50 border-2 border-yellow-200 rounded-xl">
+        <h3 class="font-bold text-yellow-800 mb-2 flex items-center space-x-2">
+          <span class="text-2xl">🚫</span>
+          <span>Microphone Access Required</span>
+        </h3>
         <div data-audio-recorder-target="permissionInstructions" class="text-sm text-yellow-700">
           <!-- Browser-specific instructions will be inserted here -->
         </div>
         <button data-action="click->audio-recorder#requestPermission"
-                class="mt-3 bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded transition-colors">
+                class="mt-3 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white px-4 py-2 rounded-lg transition-all btn-press">
           Try Again
         </button>
       </div>
     </div>
     
     <!-- Transcription Results -->
-    <div data-audio-recorder-target="results" class="mt-8 hidden">
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <h2 class="text-2xl font-bold mb-4">Live Transcription</h2>
-        <div data-audio-recorder-target="resultsList" class="max-h-96 overflow-y-auto space-y-2">
+    <div data-audio-recorder-target="results" class="mt-8 hidden transcript-fade-in">
+      <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-2xl font-bold text-gray-800">Live Transcription</h2>
+          <div class="flex items-center space-x-2">
+            <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            <span class="text-sm text-gray-600">Streaming</span>
+          </div>
+        </div>
+        <div data-audio-recorder-target="resultsList" class="max-h-96 overflow-y-auto space-y-3 pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
           <!-- Narrative transcription will be displayed here -->
         </div>
       </div>
@@ -86,9 +108,12 @@
     
     <!-- BS Detection History -->
     <div data-audio-recorder-target="bsHistory" class="mt-8 hidden">
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <h2 class="text-2xl font-bold mb-4 text-red-600">🚨 Bullshit Detected</h2>
-        <div data-audio-recorder-target="bsHistoryList" class="space-y-3 max-h-64 overflow-y-auto">
+      <div class="bg-white rounded-xl shadow-lg p-6 card-hover border-2 border-red-100">
+        <div class="flex items-center space-x-3 mb-4">
+          <span class="text-3xl animate-bounce">🚨</span>
+          <h2 class="text-2xl font-bold text-red-600">Bullshit Detected</h2>
+        </div>
+        <div data-audio-recorder-target="bsHistoryList" class="space-y-4 max-h-64 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-red-300 scrollbar-track-red-50">
           <!-- BS detections will be listed here -->
         </div>
       </div>

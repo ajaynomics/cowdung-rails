@@ -3,3 +3,131 @@
 @source "../../../app/views/**/*.html.erb";
 @source "../../../app/views/**/*.rb";
 @source "../../../app/helpers/**/*.rb";
+
+/* Bullshit Detector Custom Styles */
+@layer components {
+  /* Animated gradient background */
+  .bs-gradient-bg {
+    @apply bg-gradient-to-br from-blue-50 via-white to-red-50;
+    background-size: 200% 200%;
+    animation: gradientShift 8s ease infinite;
+  }
+  
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  
+  /* Smooth pulse for recording indicator */
+  .recording-pulse {
+    animation: recordPulse 2s ease-in-out infinite;
+  }
+  
+  @keyframes recordPulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.8; }
+  }
+  
+  /* Modern card hover effect */
+  .card-hover {
+    @apply transition-all duration-300 ease-out;
+    @apply hover:shadow-xl hover:-translate-y-1;
+  }
+  
+  /* Transcript text animation */
+  .transcript-fade-in {
+    animation: fadeInUp 0.5s ease-out;
+  }
+  
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* BS detection alert animation */
+  .bs-alert-shake {
+    animation: shake 0.5s ease-in-out;
+  }
+  
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+  }
+  
+  /* Visualizer canvas styling */
+  .audio-visualizer {
+    @apply bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+  }
+  
+  /* Status badge styling */
+  .status-badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium;
+    @apply transition-all duration-200 ease-in-out;
+  }
+  
+  .status-connected {
+    @apply bg-green-100 text-green-800;
+  }
+  
+  .status-disconnected {
+    @apply bg-gray-100 text-gray-600;
+  }
+  
+  .status-error {
+    @apply bg-red-100 text-red-800;
+  }
+  
+  /* Button animations */
+  .btn-press {
+    @apply transition-all duration-150 ease-out;
+    @apply active:scale-95 active:shadow-inner;
+  }
+  
+  /* Waveform bars */
+  .waveform-bar {
+    @apply bg-blue-500 rounded-full transition-all duration-150 ease-out;
+  }
+  
+  /* Loading spinner */
+  .spinner {
+    border: 3px solid rgba(59, 130, 246, 0.1);
+    border-radius: 50%;
+    border-top: 3px solid #3b82f6;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  /* Connection status animations */
+  .status-dot {
+    @apply w-2 h-2 rounded-full transition-all duration-300;
+  }
+  
+  .status-dot-connected {
+    @apply bg-green-500;
+    animation: pulse-green 2s ease-in-out infinite;
+  }
+  
+  @keyframes pulse-green {
+    0%, 100% { 
+      box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4);
+    }
+    50% {
+      box-shadow: 0 0 0 8px rgba(34, 197, 94, 0);
+    }
+  }
+}

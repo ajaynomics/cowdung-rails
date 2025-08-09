@@ -6,7 +6,8 @@ export default class extends Controller {
     "startBtn", "stopBtn", "indicator", "status", 
     "visualizer", "connectionIndicator", "connectionStatus",
     "muteBtn", "permissionError", "permissionInstructions",
-    "results", "resultsList", "bsIndicator"
+    "results", "resultsList", "bsIndicator", "recordingTime",
+    "bsHistory", "bsHistoryList"
   ]
   
   connect() {
@@ -18,6 +19,8 @@ export default class extends Controller {
     this.isMuted = false
     this.isRecording = false
     this.sessionId = null
+    this.startTime = null
+    this.timerInterval = null
     
     // Set up canvas for visualization
     this.setupCanvas()
@@ -108,6 +111,10 @@ export default class extends Controller {
       
       this.isRecording = true
       
+      // Start recording timer
+      this.startTime = Date.now()
+      this.startTimer()
+      
       // Update UI
       this.updateUI(true)
       this.statusTarget.textContent = "Recording audio..."
@@ -159,6 +166,12 @@ export default class extends Controller {
   stop() {
     // Stop recording
     this.isRecording = false
+    
+    // Stop timer
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval)
+      this.timerInterval = null
+    }
     
     // Clear send interval
     if (this.sendInterval) {
@@ -337,28 +350,92 @@ export default class extends Controller {
     await this.start()
   }
   
+  startTimer() {
+    this.timerInterval = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - this.startTime) / 1000)
+      const minutes = Math.floor(elapsed / 60).toString().padStart(2, '0')
+      const seconds = (elapsed % 60).toString().padStart(2, '0')
+      if (this.hasRecordingTimeTarget) {
+        this.recordingTimeTarget.textContent = `${minutes}:${seconds}`
+      }
+    }, 1000)
+  }
+  
   
   displayTranscription(data) {
-    // Show the results section
+    // Show the results section with animation
     this.resultsTarget.classList.remove("hidden")
     
     if (data.narrative_text) {
-      // Display as flowing narrative
+      // Display as flowing narrative with improved styling
       this.resultsListTarget.innerHTML = `
-        <div class="prose prose-gray max-w-none">
-          <p class="text-gray-800 leading-relaxed">${data.narrative_text}</p>
+        <div class="prose prose-gray max-w-none transcript-fade-in">
+          <p class="text-gray-800 leading-relaxed text-lg">${data.narrative_text}</p>
         </div>
-        <div class="text-xs text-gray-400 mt-2">
-          Last updated: ${new Date(data.timestamp).toLocaleTimeString()}
+        <div class="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
+          <div class="text-xs text-gray-400">
+            Last updated: ${new Date(data.timestamp).toLocaleTimeString()}
+          </div>
+          <div class="text-xs text-gray-500">
+            Session: ${data.session_id || this.sessionId}
+          </div>
         </div>
       `
+      
+      // Auto-scroll to bottom
+      this.resultsListTarget.scrollTop = this.resultsListTarget.scrollHeight
     }
   }
   
   displayBullshitAlert(data) {
     if (!data.detected) return
     
-    // Create or update BS alert
+    // Show BS history section
+    if (this.hasBsHistoryTarget) {
+      this.bsHistoryTarget.classList.remove("hidden")
+    }
+    
+    // Add to BS history list
+    if (this.hasBsHistoryListTarget) {
+      const bsItem = document.createElement('div')
+      bsItem.className = 'bg-red-50 border border-red-200 rounded-lg p-4 bs-alert-shake'
+      
+      const categoryEmoji = {
+        'misinformation': '📰',
+        'exaggeration': '📈',
+        'misleading': '🎭',
+        'false_claim': '❌',
+        'manipulation': '🎯'
+      }[data.category] || '🚨'
+      
+      bsItem.innerHTML = `
+        <div class="flex items-start space-x-3">
+          <span class="text-2xl">${categoryEmoji}</span>
+          <div class="flex-1">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-sm font-semibold text-red-800 capitalize">${data.category || 'Detected'}</span>
+              <span class="text-xs text-red-500">${new Date(data.timestamp).toLocaleTimeString()}</span>
+            </div>
+            <p class="text-sm text-red-700 mb-2">${data.explanation}</p>
+            ${data.quote ? `<p class="text-xs text-red-600 italic bg-red-100 p-2 rounded">"${data.quote}"</p>` : ''}
+            <div class="flex items-center justify-between mt-2">
+              <span class="text-xs text-red-500">Confidence: ${Math.round(data.confidence * 100)}%</span>
+              ${data.severity ? `<span class="text-xs font-medium text-red-600">Severity: ${data.severity}/5</span>` : ''}
+            </div>
+          </div>
+        </div>
+      `
+      
+      // Add to top of list
+      this.bsHistoryListTarget.insertBefore(bsItem, this.bsHistoryListTarget.firstChild)
+      
+      // Limit to 10 items
+      while (this.bsHistoryListTarget.children.length > 10) {
+        this.bsHistoryListTarget.removeChild(this.bsHistoryListTarget.lastChild)
+      }
+    }
+    
+    // Create floating alert
     let alertContainer = document.getElementById('bullshit-alert')
     if (!alertContainer) {
       alertContainer = document.createElement('div')
@@ -369,20 +446,20 @@ export default class extends Controller {
     
     // Create alert element
     const alert = document.createElement('div')
-    alert.className = 'bg-red-100 border-l-4 border-red-500 p-4 rounded-lg shadow-lg mb-2 transform transition-all duration-500 scale-0'
+    alert.className = 'bg-red-100 border-2 border-red-300 p-4 rounded-xl shadow-2xl mb-2 transform transition-all duration-500 scale-0'
     alert.innerHTML = `
       <div class="flex items-start">
         <div class="flex-shrink-0">
-          <span class="text-2xl">🚨</span>
+          <span class="text-3xl animate-bounce">🚨</span>
         </div>
-        <div class="ml-3">
-          <p class="text-sm font-bold text-red-800">Bullshit Detected!</p>
+        <div class="ml-3 flex-1">
+          <p class="text-lg font-bold text-red-800">Bullshit Detected!</p>
           <p class="text-sm text-red-700 mt-1">${data.explanation}</p>
-          ${data.quote ? `<p class="text-xs text-red-600 mt-2 italic">"${data.quote}"</p>` : ''}
+          ${data.quote ? `<p class="text-xs text-red-600 mt-2 italic bg-red-200 p-1 rounded">"${data.quote}"</p>` : ''}
           <p class="text-xs text-red-500 mt-1">Confidence: ${Math.round(data.confidence * 100)}%</p>
         </div>
-        <button onclick="this.parentElement.parentElement.remove()" class="ml-3 text-red-400 hover:text-red-600">
-          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+        <button onclick="this.parentElement.parentElement.remove()" class="ml-3 text-red-400 hover:text-red-600 transition-colors">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
             <path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"/>
           </svg>
         </button>
@@ -391,7 +468,7 @@ export default class extends Controller {
     
     alertContainer.appendChild(alert)
     
-    // Animate in
+    // Animate in with sound effect (optional)
     setTimeout(() => {
       alert.classList.remove('scale-0')
       alert.classList.add('scale-100')
