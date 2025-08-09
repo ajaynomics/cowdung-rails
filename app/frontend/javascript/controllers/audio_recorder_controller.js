@@ -17,6 +17,7 @@ export default class extends Controller {
     this.subscription = null
     this.isMuted = false
     this.isRecording = false
+    this.sessionId = null
     
     // Set up canvas for visualization
     this.setupCanvas()
@@ -31,6 +32,9 @@ export default class extends Controller {
   
   async start() {
     try {
+      // Generate session ID for this recording session
+      this.sessionId = `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+      
       // Request microphone permission
       this.stream = await navigator.mediaDevices.getUserMedia({ audio: true })
       
@@ -57,7 +61,7 @@ export default class extends Controller {
           const reader = new FileReader()
           reader.onloadend = () => {
             const base64data = reader.result.split(',')[1]
-            this.subscription.send({ audio_chunk: base64data })
+            this.subscription.perform('receive_audio', { audio_chunk: base64data })
           }
           reader.readAsDataURL(event.data)
         }
@@ -83,7 +87,10 @@ export default class extends Controller {
   }
   
   setupSubscription() {
-    this.subscription = consumer.subscriptions.create("DetectorChannel", {
+    this.subscription = consumer.subscriptions.create({
+      channel: "DetectorChannel",
+      session_id: this.sessionId
+    }, {
       connected: () => {
         this.updateConnectionStatus(true)
       },
