@@ -85,7 +85,7 @@ class DetectorChannelTest < ActionCable::Channel::TestCase
     assert_no_enqueued_jobs
 
     # 3rd chunk (sequence 2) should trigger first job
-    assert_enqueued_with(job: ProcessAudioJob, args: [ "test-job-session", 0, 2 ]) do
+    assert_enqueued_with(job: ProcessAudioJob, args: [ "test-job-session", 0, 2, "quick" ]) do
       perform :receive_audio, audio_chunk: "chunk2"
     end
 
@@ -94,7 +94,7 @@ class DetectorChannelTest < ActionCable::Channel::TestCase
     assert_enqueued_jobs 1  # Still just one job
 
     # 5th chunk (sequence 4) should trigger second job with overlap
-    assert_enqueued_with(job: ProcessAudioJob, args: [ "test-job-session", 2, 4 ]) do
+    assert_enqueued_with(job: ProcessAudioJob, args: [ "test-job-session", 2, 4, "quick" ]) do
       perform :receive_audio, audio_chunk: "chunk4"
     end
 
@@ -103,7 +103,7 @@ class DetectorChannelTest < ActionCable::Channel::TestCase
     assert_enqueued_jobs 2  # Still just two jobs
 
     # 7th chunk (sequence 6) triggers third job
-    assert_enqueued_with(job: ProcessAudioJob, args: [ "test-job-session", 4, 6 ]) do
+    assert_enqueued_with(job: ProcessAudioJob, args: [ "test-job-session", 4, 6, "quick" ]) do
       perform :receive_audio, audio_chunk: "chunk6"
     end
   end

@@ -35,7 +35,9 @@ class ProcessAudioJobTest < ActiveJob::TestCase
     # Run the job
     assert_difference "TranscriptionSegment.count", 1 do
       assert_difference "TranscriptionSession.count", 1 do
-        ProcessAudioJob.perform_now(session_id, 0, 2)
+        assert_difference "SessionTranscript.count", 1 do
+          ProcessAudioJob.perform_now(session_id, 0, 2, "quick")
+        end
       end
     end
 
@@ -91,10 +93,10 @@ class ProcessAudioJobTest < ActiveJob::TestCase
     end
 
     # Process first window (0-2)
-    ProcessAudioJob.perform_now(session_id, 0, 2)
+    ProcessAudioJob.perform_now(session_id, 0, 2, "quick")
 
     # Process overlapping window (2-4)
-    ProcessAudioJob.perform_now(session_id, 2, 4)
+    ProcessAudioJob.perform_now(session_id, 2, 4, "quick")
 
     # Should have created 2 segments but detected overlap
     assert_equal 2, TranscriptionSegment.where(session_id: session_id).count

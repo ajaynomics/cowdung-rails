@@ -1,10 +1,13 @@
 class ProcessAudioJob < ApplicationJob
   queue_as :default
 
-  def perform(session_id, start_sequence, end_sequence)
-    Rails.logger.info "Processing audio chunks for session #{session_id}, sequences #{start_sequence}-#{end_sequence}"
+  def perform(session_id, start_sequence, end_sequence, quality_level = "quick")
+    Rails.logger.info "Processing audio chunks for session #{session_id}, sequences #{start_sequence}-#{end_sequence} (#{quality_level})"
 
-    # Get or create transcription session
+    # Get or create session transcript
+    session_transcript = SessionTranscript.find_or_create_by!(session_id: session_id)
+
+    # Get or create transcription session for deduplication tracking
     transcription_session = TranscriptionSession.find_or_create_by!(session_id: session_id)
 
     # Get chunks for this batch
@@ -70,16 +73,30 @@ class ProcessAudioJob < ApplicationJob
         duration: chunks.count
       )
 
-      # Broadcast only the new content
+      # Add segment to session transcript
+      session_transcript.add_segment(
+        broadcast_text,
+        start_sequence,
+        end_sequence,
+        quality_level
+      )
+
+      # Mark quality pass if applicable
+      if quality_level == "quality"
+        session_transcript.mark_quality_pass(end_sequence)
+      end
+
+      # Broadcast the updated narrative
       ActionCable.server.broadcast(
         "detector_#{session_id}",
         {
           type: "transcription",
           text: broadcast_text,
+          narrative_text: session_transcript.current_text,
           start_sequence: start_sequence,
           end_sequence: end_sequence,
           timestamp: Time.current,
-          is_partial: overlap_size > 0
+          quality_level: quality_level
         }
       )
 
@@ -87,11 +104,18 @@ class ProcessAudioJob < ApplicationJob
       transcription_session.update!(last_processed_text: transcribed_text)
       transcription_session.add_processed_range(start_sequence, end_sequence)
 
-      # Only delete non-overlapping chunks
-      # Keep the last chunk for next window's overlap
-      if end_sequence > 0
-        chunks_to_delete = chunks[0...-1]  # Keep the last chunk
-        chunks_to_delete.each(&:destroy)
+      # Chunk deletion strategy based on quality level
+      if quality_level == "final"
+        # Delete all chunks on final pass
+        chunks.destroy_all
+      elsif quality_level == "quality"
+        # Delete chunks older than 30 seconds ago
+        old_chunks = AudioChunk.for_session(session_id)
+                               .where("sequence < ?", end_sequence - 35)
+        old_chunks.destroy_all
+      else
+        # For quick passes, keep chunks for quality processing
+        # Don't delete anything
       end
 
       Rails.logger.info "✅ Transcription complete for session #{session_id}: #{broadcast_text.truncate(100)}"

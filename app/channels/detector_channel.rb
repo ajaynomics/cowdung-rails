@@ -20,7 +20,7 @@ class DetectorChannel < ApplicationCable::Channel
       sample_rate: data["sample_rate"] || 44100
     )
 
-    # Process every 3 seconds with sliding window
+    # Process every 3 seconds with sliding window (quick pass)
     # First window at chunk 2 (sequences 0-2)
     # Then slide by 2: chunks 4 (2-4), 6 (4-6), etc.
     if chunk.sequence == 2 || (chunk.sequence > 2 && (chunk.sequence - 2) % 2 == 0)
@@ -28,7 +28,16 @@ class DetectorChannel < ApplicationCable::Channel
       end_seq = chunk.sequence
       start_seq = [ 0, end_seq - 2 ].max
 
-      ProcessAudioJob.perform_later(@session_id, start_seq, end_seq)
+      ProcessAudioJob.perform_later(@session_id, start_seq, end_seq, "quick")
+    end
+
+    # Process every 10 seconds with full 30-second window (quality pass)
+    if chunk.sequence >= 29 && (chunk.sequence + 1) % 10 == 0
+      # Process last 30 chunks for quality
+      end_seq = chunk.sequence
+      start_seq = [ 0, end_seq - 29 ].max
+
+      ProcessAudioJob.perform_later(@session_id, start_seq, end_seq, "quality")
     end
   end
 
@@ -46,26 +55,16 @@ class DetectorChannel < ApplicationCable::Channel
     # Get the highest sequence number
     last_sequence = remaining_chunks.maximum(:sequence)
 
-    # Find the last window that would have been processed
-    # Windows are at sequences 2, 4, 6, 8, etc.
-    if last_sequence < 2
-      # Not enough chunks for even one window
-      return
-    end
-
-    # Find the last processed window end
-    last_processed_end = if last_sequence == 2
-      -1 # Nothing processed yet
-    else
-      # Find the last even sequence that would trigger processing
-      ((last_sequence - 2) / 2) * 2 + 2 - 1
-    end
-
-    # If we have unprocessed chunks, process the final window
-    if last_sequence > last_processed_end
-      start_seq = [ 0, last_sequence - 2 ].max
+    # Process all remaining chunks with quality pass
+    if last_sequence >= 0
+      # Process up to 30 chunks or all if less
+      start_seq = [ 0, last_sequence - 29 ].max
       Rails.logger.info "Processing remaining chunks for session #{@session_id}, sequences #{start_seq}-#{last_sequence}"
-      ProcessAudioJob.perform_later(@session_id, start_seq, last_sequence)
+      ProcessAudioJob.perform_later(@session_id, start_seq, last_sequence, "final")
     end
+
+    # Mark session as completed
+    session_transcript = SessionTranscript.find_by(session_id: @session_id)
+    session_transcript&.update!(status: "completed")
   end
 end
