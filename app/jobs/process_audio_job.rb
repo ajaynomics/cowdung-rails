@@ -4,9 +4,12 @@ class ProcessAudioJob < ApplicationJob
   def perform(session_id, start_sequence, end_sequence)
     Rails.logger.info "Processing audio chunks for session #{session_id}, sequences #{start_sequence}-#{end_sequence}"
 
-    # ALWAYS include chunk 0 to get the WebM header
-    # This is required for proper WebM file creation
-    actual_start = 0
+    # For PCM chunks, we don't need to include chunk 0
+    # For WebM, we need all chunks from the start
+    first_chunk = AudioChunk.for_session(session_id).first
+    format = first_chunk&.format || "webm"
+
+    actual_start = format == "pcm16" ? start_sequence : 0
     all_chunks = AudioChunk.for_session(session_id)
                            .where(sequence: actual_start..end_sequence)
                            .in_sequence

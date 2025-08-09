@@ -14,9 +14,14 @@ class WhisperService
   def transcribe_chunks(audio_chunks)
     return Result.new(success?: false, error: "No audio chunks provided") if audio_chunks.empty?
 
-    # WebM chunks from browser are segments, not complete files
-    # We need to create a proper WebM container
-    temp_file = create_webm_from_segments(audio_chunks)
+    # Check format of chunks
+    format = audio_chunks.first.format || "webm"
+
+    temp_file = if format == "pcm16"
+                  create_wav_from_pcm(audio_chunks)
+    else
+                  create_webm_from_segments(audio_chunks)
+    end
 
     Rails.logger.info "Sending file to Whisper: #{temp_file.path}, size: #{File.size(temp_file.path)} bytes"
 
@@ -38,6 +43,43 @@ class WhisperService
   end
 
   private
+
+  def create_wav_from_pcm(audio_chunks)
+    output_file = Tempfile.new([ "audio", ".wav" ])
+    output_file.binmode
+
+    # Get audio parameters from first chunk
+    sample_rate = audio_chunks.first.sample_rate || 44100
+    bits_per_sample = 16
+    channels = 1
+
+    # Combine all PCM data
+    pcm_data = audio_chunks.map { |chunk| Base64.decode64(chunk.data) }.join
+    data_size = pcm_data.bytesize
+
+    # Write WAV header
+    output_file.write("RIFF")
+    output_file.write([ data_size + 36 ].pack("V")) # File size - 8
+    output_file.write("WAVE")
+
+    # Format chunk
+    output_file.write("fmt ")
+    output_file.write([ 16 ].pack("V")) # Format chunk size
+    output_file.write([ 1 ].pack("v"))  # PCM format
+    output_file.write([ channels ].pack("v"))
+    output_file.write([ sample_rate ].pack("V"))
+    output_file.write([ sample_rate * channels * bits_per_sample / 8 ].pack("V")) # Byte rate
+    output_file.write([ channels * bits_per_sample / 8 ].pack("v")) # Block align
+    output_file.write([ bits_per_sample ].pack("v"))
+
+    # Data chunk
+    output_file.write("data")
+    output_file.write([ data_size ].pack("V"))
+    output_file.write(pcm_data)
+
+    output_file.rewind
+    output_file
+  end
 
   def create_webm_from_segments(audio_chunks)
     # Browser MediaRecorder sends WebM segments:

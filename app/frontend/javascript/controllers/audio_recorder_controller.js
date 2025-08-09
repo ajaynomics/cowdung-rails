@@ -48,34 +48,64 @@ export default class extends Controller {
       const source = this.audioContext.createMediaStreamSource(this.stream)
       source.connect(this.analyser)
       
-      // Set up MediaRecorder for streaming
-      const options = {
-        mimeType: 'audio/webm;codecs=opus',
-        audioBitsPerSecond: 16000 // Low bitrate for streaming
-      }
+      // Set up audio capture using ScriptProcessorNode for PCM data
+      // This gives us raw audio we can easily process
+      const bufferSize = 16384 // ~370ms at 44.1kHz
+      this.sampleRate = this.audioContext.sampleRate
+      this.scriptProcessor = this.audioContext.createScriptProcessor(bufferSize, 1, 1)
+      this.pcmChunks = []
+      this.chunkDuration = 1000 // 1 second chunks
       
-      this.mediaRecorder = new MediaRecorder(this.stream, options)
+      // Connect audio pipeline
+      source.connect(this.scriptProcessor)
+      this.scriptProcessor.connect(this.audioContext.destination)
       
-      // Stream audio chunks
-      this.mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0 && this.subscription && !this.isMuted) {
-          console.log('Audio chunk received:', event.data.size, 'bytes, type:', event.data.type)
-          
-          // Convert blob to base64 for transmission
-          const reader = new FileReader()
-          reader.onloadend = () => {
-            const base64data = reader.result.split(',')[1]
-            this.subscription.perform('receive_audio', { audio_chunk: base64data })
-          }
-          reader.readAsDataURL(event.data)
+      // Capture PCM data
+      this.scriptProcessor.onaudioprocess = (event) => {
+        if (!this.isRecording || this.isMuted) return
+        
+        const inputData = event.inputBuffer.getChannelData(0)
+        // Convert Float32Array to Int16Array for smaller size
+        const pcm16 = new Int16Array(inputData.length)
+        for (let i = 0; i < inputData.length; i++) {
+          const s = Math.max(-1, Math.min(1, inputData[i]))
+          pcm16[i] = s < 0 ? s * 0x8000 : s * 0x7FFF
         }
+        
+        this.pcmChunks.push(pcm16)
       }
       
       // Set up ActionCable subscription
       this.setupSubscription()
       
-      // Start recording with 1-second chunks for granular streaming
-      this.mediaRecorder.start(1000)
+      // Send PCM data every second
+      this.sendInterval = setInterval(() => {
+        if (this.pcmChunks.length > 0 && this.subscription && !this.isMuted) {
+          // Combine PCM chunks
+          const totalLength = this.pcmChunks.reduce((acc, chunk) => acc + chunk.length, 0)
+          const combined = new Int16Array(totalLength)
+          let offset = 0
+          this.pcmChunks.forEach(chunk => {
+            combined.set(chunk, offset)
+            offset += chunk.length
+          })
+          
+          // Convert to base64
+          const buffer = combined.buffer
+          const base64 = btoa(String.fromCharCode(...new Uint8Array(buffer)))
+          
+          console.log(`Sending PCM audio: ${totalLength} samples (${(totalLength/this.sampleRate).toFixed(2)}s)`)
+          this.subscription.perform('receive_audio', { 
+            audio_chunk: base64,
+            format: 'pcm16',
+            sample_rate: this.sampleRate
+          })
+          
+          // Clear chunks
+          this.pcmChunks = []
+        }
+      }, this.chunkDuration)
+      
       this.isRecording = true
       
       // Update UI
@@ -127,8 +157,19 @@ export default class extends Controller {
   }
   
   stop() {
-    if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
-      this.mediaRecorder.stop()
+    // Stop recording
+    this.isRecording = false
+    
+    // Clear send interval
+    if (this.sendInterval) {
+      clearInterval(this.sendInterval)
+      this.sendInterval = null
+    }
+    
+    // Disconnect audio nodes
+    if (this.scriptProcessor) {
+      this.scriptProcessor.disconnect()
+      this.scriptProcessor = null
     }
     
     if (this.stream) {
@@ -146,7 +187,9 @@ export default class extends Controller {
       this.subscription = null
     }
     
-    this.isRecording = false
+    // Clear any remaining PCM data
+    this.pcmChunks = []
+    
     this.updateUI(false)
     this.statusTarget.textContent = "Stopped detecting"
     this.updateConnectionStatus(false)

@@ -13,7 +13,10 @@ class DetectorChannel < ApplicationCable::Channel
 
   def receive_audio(data)
     audio_data = data["audio_chunk"]
-    Rails.logger.info "🎤 Audio chunk received - session: #{@session_id}, size: #{audio_data&.length || 0}"
+    format = data["format"] || "webm"
+    sample_rate = data["sample_rate"] || 44100
+
+    Rails.logger.info "🎤 Audio chunk received - session: #{@session_id}, format: #{format}, size: #{audio_data&.length || 0}"
 
     # Validate we have audio data
     if audio_data.blank?
@@ -21,12 +24,14 @@ class DetectorChannel < ApplicationCable::Channel
       return
     end
 
-    # Save the audio chunk
+    # Save the audio chunk with metadata
     sequence = next_sequence_number
     chunk = AudioChunk.create!(
       session_id: @session_id,
       data: audio_data,
-      sequence: sequence
+      sequence: sequence,
+      format: format,
+      sample_rate: sample_rate
     )
 
     Rails.logger.info "Saved chunk #{sequence} for session #{@session_id}"

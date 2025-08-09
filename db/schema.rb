@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_09_024414) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_09_035359) do
   create_table "audio_chunks", force: :cascade do |t|
     t.string "session_id", null: false
     t.text "data", null: false
@@ -18,6 +18,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_09_024414) do
     t.boolean "processed", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "format"
+    t.integer "sample_rate"
     t.index ["session_id", "processed"], name: "index_audio_chunks_on_session_id_and_processed"
     t.index ["session_id", "sequence"], name: "index_audio_chunks_on_session_id_and_sequence", unique: true
     t.index ["session_id"], name: "index_audio_chunks_on_session_id"
