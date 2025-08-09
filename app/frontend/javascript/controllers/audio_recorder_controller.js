@@ -74,8 +74,8 @@ export default class extends Controller {
       // Set up ActionCable subscription
       this.setupSubscription()
       
-      // Start recording with 5-second chunks
-      this.mediaRecorder.start(5000)
+      // Start recording with 1-second chunks for granular streaming
+      this.mediaRecorder.start(1000)
       this.isRecording = true
       
       // Update UI
