@@ -8,14 +8,34 @@ class DetectorChannelTest < ActionCable::Channel::TestCase
     assert_has_stream "detector_test-session-123"
   end
 
-  test "receives audio data" do
+  test "receives audio data and creates chunk" do
     subscribe session_id: "test-session-456"
 
-    # Perform the receive_audio action
-    perform :receive_audio, audio_chunk: "base64audiodata"
+    assert_difference "AudioChunk.count", 1 do
+      perform :receive_audio, audio_chunk: "base64audiodata"
+    end
 
-    # Just verify no errors are raised - we're only logging for now
-    assert subscription.confirmed?
+    chunk = AudioChunk.last
+    assert_equal "test-session-456", chunk.session_id
+    assert_equal "base64audiodata", chunk.data
+    assert_equal 0, chunk.sequence
+  end
+
+  test "creates chunks with proper sequence" do
+    subscribe session_id: "test-session-789"
+
+    # Create first chunk
+    perform :receive_audio, audio_chunk: "chunk1"
+    chunk1 = AudioChunk.last
+    assert_equal 0, chunk1.sequence
+
+    # Create second chunk
+    perform :receive_audio, audio_chunk: "chunk2"
+    chunk2 = AudioChunk.last
+    assert_equal 1, chunk2.sequence
+
+    # Verify both chunks exist
+    assert_equal 2, AudioChunk.where(session_id: "test-session-789").count
   end
 
   test "unsubscribes cleanly" do

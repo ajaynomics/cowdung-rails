@@ -18,6 +18,8 @@ export default class extends Controller {
     this.isMuted = false
     this.isRecording = false
     this.sessionId = null
+    this.audioChunks = []
+    this.chunkStartTime = null
     
     // Set up canvas for visualization
     this.setupCanvas()
@@ -54,9 +56,11 @@ export default class extends Controller {
       
       this.mediaRecorder = new MediaRecorder(this.stream, options)
       
-      // Stream audio chunks every second
+      // Stream audio chunks
       this.mediaRecorder.ondataavailable = (event) => {
         if (event.data.size > 0 && this.subscription && !this.isMuted) {
+          console.log('Audio chunk received:', event.data.size, 'bytes, type:', event.data.type)
+          
           // Convert blob to base64 for transmission
           const reader = new FileReader()
           reader.onloadend = () => {
@@ -70,8 +74,8 @@ export default class extends Controller {
       // Set up ActionCable subscription
       this.setupSubscription()
       
-      // Start recording with 1-second chunks
-      this.mediaRecorder.start(1000)
+      // Start recording with 5-second chunks
+      this.mediaRecorder.start(5000)
       this.isRecording = true
       
       // Update UI
@@ -100,8 +104,10 @@ export default class extends Controller {
       },
       
       received: (data) => {
-        // Handle BS detection results
-        if (data.bs_detected) {
+        // Handle different types of messages
+        if (data.type === 'transcription') {
+          this.displayTranscription(data)
+        } else if (data.bs_detected) {
           this.displayResult(data)
         }
       }
@@ -287,6 +293,30 @@ export default class extends Controller {
     // This will be implemented in a future phase
     console.log("BS detected:", data)
   }
+  
+  displayTranscription(data) {
+    // Show the results section
+    this.resultsTarget.classList.remove("hidden")
+    
+    // Create a new transcription entry
+    const entry = document.createElement("div")
+    entry.className = "mb-4 p-4 bg-gray-50 rounded-lg"
+    entry.innerHTML = `
+      <div class="text-sm text-gray-500 mb-1">
+        ${new Date(data.timestamp).toLocaleTimeString()}
+      </div>
+      <div class="text-gray-800">
+        ${data.text}
+      </div>
+    `
+    
+    // Append to results list
+    this.resultsListTarget.appendChild(entry)
+    
+    // Scroll to bottom to show latest
+    this.resultsListTarget.scrollTop = this.resultsListTarget.scrollHeight
+  }
+  
   
   disconnect() {
     this.stop()

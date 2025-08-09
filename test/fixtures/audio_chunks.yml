@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+sample_chunk:
+  session_id: fixture-session-123
+  data: "base64encodedaudiodata"
+  sequence: 0
+  processed: false
+
+another_chunk:
+  session_id: fixture-session-123
+  data: "anotherbase64chunk"
+  sequence: 1
+  processed: false
