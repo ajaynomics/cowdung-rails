@@ -15,7 +15,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - A test that passes when the feature is broken is worse than no test
 - NEVER use mocking frameworks (mocha, rspec-mocks) - use real objects
 - Don't assume things won't work in test - investigate and fix the root cause
-- If external services are needed in tests, make them work, don't fake them
+
+### Development Approach for External APIs
+
+1. **Development First**: ALWAYS implement features with rake tasks first, test with real APIs
+2. **Test After Confirming**: Once feature works in development, THEN stub responses in tests
+3. **WebMock Configuration**: 
+   - Always block ALL external calls by default: `WebMock.disable_net_connect!(allow_localhost: true)`
+   - Never allow real API calls in tests (no `allow: "api.openai.com"` etc.)
+4. **Stubbing Strategy**:
+   - WebMock HTTP stubbing is often the cleanest approach for external APIs
+   - Keep stubs simple, readable, and focused on the specific test needs
+5. **System Tests**: WebMock is appropriate since they run in separate processes
+6. **Test Philosophy**: Tests should be human readable and follow Rails Omakase principles
 
 ## Project Overview
 

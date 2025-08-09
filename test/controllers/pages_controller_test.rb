@@ -9,17 +9,27 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-controller='audio-recorder']"
   end
 
-  test "greeting page renders and executes workflow" do
+  test "greeting page renders successfully" do
+    # Stub OpenAI API call
+    WebMock.stub_request(:post, "https://api.openai.com/v1/chat/completions")
+      .to_return(
+        status: 200,
+        body: {
+          choices: [
+            {
+              message: {
+                content: "Hello from Roast!"
+              }
+            }
+          ]
+        }.to_json,
+        headers: { "Content-Type" => "application/json" }
+      )
+
     get greeting_path
     assert_response :success
-
-    # Page structure is correct
     assert_select "h1", "AI Greeting"
     assert_select "p", text: /You asked: "How are you today\?"/
-
-    # Response area exists and contains content
-    assert_select ".bg-gray-50 p" do |elements|
-      assert elements.first.text.strip.present?, "Response area should contain text"
-    end
+    assert_match "Hello from Roast!", response.body
   end
 end
