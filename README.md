@@ -1,4 +1,6 @@
-# 🐄 CowdungRails: The BS Detector
+<img width="1910" height="794" alt="image" src="https://github.com/user-attachments/assets/6a89f65e-a946-4d45-864d-b3f1eb6fae92" />
+
+# 🐄 Cowdung: The BS Detector
 
 **Real-time bullshit detection for the modern world**
 
