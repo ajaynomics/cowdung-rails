@@ -1,1 +1,0 @@
-Say "Hello from Roast!" and nothing else.
