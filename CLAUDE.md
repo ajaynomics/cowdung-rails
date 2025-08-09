@@ -108,6 +108,27 @@ Current AI features:
 - Audio recording interface at `/audio` with 10-second recording/playback
 - Greeting workflow at `/pages/greeting` demonstrating Roast integration
 - Example workflow job `RunExampleWorkflowJob` for background AI processing
+- Bullshit Detector at `/detector` - Real-time transcription + BS detection
+
+#### Transcription Approach & Limitations
+
+**Current**: Using OpenAI Whisper API with rolling context windows
+- **Limitations**:
+  - Whisper does NOT support streaming (requires complete audio files)
+  - Hallucinates/repeats words on silence
+  - 2-3 second latency minimum
+  - High API costs for continuous usage
+
+**Mitigations implemented**:
+- Frontend VAD (Voice Activity Detection) to skip silent chunks
+- Backend repetition filtering to remove hallucinated duplicates
+- Rolling 30-second context windows for better accuracy
+
+**Recommended alternatives for true real-time**:
+1. **Deepgram Streaming API** - WebSocket streaming, 200-300ms latency
+2. **AssemblyAI Real-Time** - WebSocket-based streaming
+3. **Google Speech-to-Text Streaming**
+4. Keep Whisper only for final/archive quality transcription
 
 ### Testing
 - **Framework**: Minitest ONLY (never RSpec or Mocha)
@@ -150,6 +171,7 @@ Current AI features:
 - `/` - Welcome page
 - `/audio` - Audio recording interface
 - `/pages/greeting` - AI greeting demo
+- `/detector` - Bullshit detector (real-time audio transcription + BS detection)
 
 ### Next Steps for New Features:
 1. For authentication: Configure Devise with `rails generate devise:install`

@@ -67,6 +67,19 @@ export default class extends Controller {
         if (!this.isRecording || this.isMuted) return
         
         const inputData = event.inputBuffer.getChannelData(0)
+        
+        // Simple VAD: Check if there's actual sound
+        let maxAmplitude = 0
+        for (let i = 0; i < inputData.length; i++) {
+          maxAmplitude = Math.max(maxAmplitude, Math.abs(inputData[i]))
+        }
+        
+        // Skip silent chunks
+        const silenceThreshold = 0.01  // Adjust as needed
+        if (maxAmplitude < silenceThreshold) {
+          return
+        }
+        
         // Convert Float32Array to Int16Array for smaller size
         const pcm16 = new Int16Array(inputData.length)
         for (let i = 0; i < inputData.length; i++) {
