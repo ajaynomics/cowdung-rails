@@ -118,7 +118,7 @@ export default class extends Controller {
   
   setupSubscription() {
     this.subscription = consumer.subscriptions.create({
-      channel: "AudioTranscriptionChannel",
+      channel: "DetectorChannel",
       session_id: this.sessionId
     }, {
       connected: () => {

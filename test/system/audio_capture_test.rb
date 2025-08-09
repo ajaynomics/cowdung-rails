@@ -4,7 +4,7 @@ class AudioCaptureTest < ApplicationSystemTestCase
   test "displays recording interface" do
     visit root_path
 
-    assert_selector "h1", text: "Audio Transcription"
+    assert_selector "h1", text: "Bullshit Detector"
     assert_button "Start Recording"
   end
 

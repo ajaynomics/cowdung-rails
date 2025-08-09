@@ -1,7 +1,7 @@
-class AudioTranscriptionChannel < ApplicationCable::Channel
+class DetectorChannel < ApplicationCable::Channel
   def subscribed
     @session_id = params[:session_id]
-    stream_from "audio_transcription_#{@session_id}"
+    stream_from "detector_#{@session_id}"
   end
 
   def unsubscribed

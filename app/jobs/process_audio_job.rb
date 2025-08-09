@@ -31,7 +31,7 @@ class ProcessAudioJob < ApplicationJob
 
       # Broadcast the transcription to the frontend
       ActionCable.server.broadcast(
-        "audio_transcription_#{session_id}",
+        "detector_#{session_id}",
         {
           type: "transcription",
           text: result[:text],

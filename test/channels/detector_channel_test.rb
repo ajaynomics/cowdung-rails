@@ -1,13 +1,13 @@
 require "test_helper"
 
-class AudioTranscriptionChannelTest < ActionCable::Channel::TestCase
+class DetectorChannelTest < ActionCable::Channel::TestCase
   include ActiveJob::TestHelper
-  tests AudioTranscriptionChannel
+  tests DetectorChannel
   test "subscribes to detector stream" do
     subscribe session_id: "test-session-123"
 
     assert subscription.confirmed?
-    assert_has_stream "audio_transcription_test-session-123"
+    assert_has_stream "detector_test-session-123"
   end
 
   test "receives audio data and creates chunk" do
