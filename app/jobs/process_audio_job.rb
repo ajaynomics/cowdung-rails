@@ -86,17 +86,6 @@ class ProcessAudioJob < ApplicationJob
         session_transcript.mark_quality_pass(end_sequence)
       end
 
-      # Trigger bullshit detection every 15 seconds worth of content
-      # Only on quality passes to avoid too frequent API calls
-      if quality_level == "quality" && session_transcript.current_text.length > 100
-        last_bs_check = BullshitAnalysis.for_session(session_id).recent.first
-
-        # Check if enough time has passed since last check (15 seconds)
-        if last_bs_check.nil? || last_bs_check.created_at < 15.seconds.ago
-          DetectBullshitJob.perform_later(session_id)
-        end
-      end
-
       # Broadcast the updated narrative
       ActionCable.server.broadcast(
         "detector_#{session_id}",

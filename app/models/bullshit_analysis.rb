@@ -15,13 +15,16 @@ class BullshitAnalysis < ApplicationRecord
 
     Be critical! If something sounds like corporate speak, marketing hype, or evasion, call it out.
 
+    IMPORTANT: You will receive recent BS detections from the last few minutes. Only report NEW bullshit that hasn't been called out already. If the same type of BS continues, don't repeat yourself unless it's significantly worse or different.
+
     Always respond with this exact JSON structure:
     {
       "bullshit_detected": true/false,
       "confidence": 0.0-1.0,
       "type": "lie|jargon|evasion|buzzwords|contradiction|vague|exaggeration",
       "explanation": "Brief explanation of the BS detected",
-      "quote": "The most BS quote from the text"
+      "quote": "The most BS quote from the text",
+      "is_duplicate": true/false
     }
   PROMPT
 
@@ -32,16 +35,26 @@ class BullshitAnalysis < ApplicationRecord
   scope :detected, -> { where(detected: true) }
   scope :recent, -> { order(created_at: :desc) }
 
-  def self.analyze_transcript(session_id, transcript_text)
+  def self.analyze_transcript(session_id, transcript_text, recent_detections = nil)
     return nil if transcript_text.blank? || transcript_text.length < 30
 
-    # Check if we've analyzed similar text recently (within 5 seconds)
-    recent_analysis = for_session(session_id)
-                     .where("created_at > ?", 5.seconds.ago)
-                     .where(analyzed_text: transcript_text)
-                     .first
+    # Get recent detections if not provided
+    recent_detections ||= for_session(session_id)
+                         .detected
+                         .where("created_at > ?", 2.minutes.ago)
+                         .order(created_at: :desc)
+                         .limit(5)
 
-    return recent_analysis if recent_analysis
+    # Prepare context about recent detections
+    recent_context = if recent_detections.any?
+      recent_summary = recent_detections.map do |d|
+        "- #{d.bs_type}: #{d.quote} (#{d.explanation})"
+      end.join("\n")
+
+      "\n\nRecent BS already detected in the last 2 minutes:\n#{recent_summary}"
+    else
+      ""
+    end
 
     # Perform the analysis
     client = Raix.configuration.openai_client
@@ -50,7 +63,7 @@ class BullshitAnalysis < ApplicationRecord
         model: MODEL,
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
-          { role: "user", content: "Analyze this transcript for bullshit:\n\n#{transcript_text}" }
+          { role: "user", content: "Analyze this transcript for bullshit:\n\n#{transcript_text}#{recent_context}" }
         ],
         response_format: { type: "json_object" },
         temperature: 0.7
@@ -60,6 +73,12 @@ class BullshitAnalysis < ApplicationRecord
     result = JSON.parse(response.dig("choices", 0, "message", "content"))
 
     Rails.logger.info "Bullshit detection result: #{result.inspect}"
+
+    # Skip if it's a duplicate
+    if result["is_duplicate"]
+      Rails.logger.info "Skipping duplicate BS detection"
+      return nil
+    end
 
     # Create and return the analysis record
     create!(

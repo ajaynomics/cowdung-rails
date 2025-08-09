@@ -101,6 +101,54 @@ namespace :bullshit do
     end
   end
 
+  desc "Test deduplication logic"
+  task dedup_test: :environment do
+    puts "Testing deduplication logic..."
+    puts "=" * 60
+
+    session_id = "dedup-test-#{Time.current.to_i}"
+
+    # Create first detection
+    analysis1 = BullshitAnalysis.create!(
+      session_id: session_id,
+      detected: true,
+      confidence: 0.9,
+      bs_type: "jargon",
+      explanation: "Corporate jargon detected",
+      quote: "leverage our synergies",
+      analyzed_text: "We need to leverage our synergies"
+    )
+
+    puts "Created first detection: #{analysis1.quote}"
+
+    # Try to detect similar BS (should be marked as duplicate)
+    text = "We need to leverage our synergies and create paradigm shifts"
+    analysis2 = BullshitAnalysis.analyze_transcript(session_id, text)
+
+    if analysis2
+      puts "\nSecond analysis:"
+      puts "  Detected: #{analysis2.detected?}"
+      puts "  Type: #{analysis2.bs_type}"
+      puts "  Explanation: #{analysis2.explanation}"
+    else
+      puts "\nSecond analysis was skipped as duplicate"
+    end
+
+    # Try different BS (should be detected)
+    text2 = "This revolutionary product will guarantee 1000% ROI"
+    analysis3 = BullshitAnalysis.analyze_transcript(session_id, text2)
+
+    if analysis3
+      puts "\nThird analysis (different BS):"
+      puts "  Detected: #{analysis3.detected?}"
+      puts "  Type: #{analysis3.bs_type}"
+      puts "  Explanation: #{analysis3.explanation}"
+    end
+
+    # Cleanup
+    BullshitAnalysis.for_session(session_id).destroy_all
+  end
+
   desc "Test the full job flow"
   task job_test: :environment do
     puts "Testing full job flow..."

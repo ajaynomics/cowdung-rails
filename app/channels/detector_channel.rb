@@ -31,13 +31,20 @@ class DetectorChannel < ApplicationCable::Channel
       ProcessAudioJob.perform_later(@session_id, start_seq, end_seq, "quick")
     end
 
-    # Process every 10 seconds with full 30-second window (quality pass)
-    if chunk.sequence >= 29 && (chunk.sequence + 1) % 10 == 0
-      # Process last 30 chunks for quality
+    # Process every 10 seconds (quality pass)
+    # Start at chunk 9 (10 seconds) then every 10 chunks: 9, 19, 29, etc.
+    if chunk.sequence >= 9 && (chunk.sequence + 1) % 10 == 0
+      # Process last 10 chunks for quality
       end_seq = chunk.sequence
-      start_seq = [ 0, end_seq - 29 ].max
+      start_seq = [ 0, end_seq - 9 ].max
 
       ProcessAudioJob.perform_later(@session_id, start_seq, end_seq, "quality")
+    end
+
+    # Run BS detection every 5 seconds on full transcript
+    # Start at chunk 4 (5 seconds) then every 5 chunks: 4, 9, 14, 19, etc.
+    if chunk.sequence >= 4 && (chunk.sequence + 1) % 5 == 0
+      DetectBullshitJob.perform_later(@session_id)
     end
   end
 
