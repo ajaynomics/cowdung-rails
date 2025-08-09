@@ -7,20 +7,28 @@ namespace :bullshit do
     # Test samples with varying levels of BS
     test_samples = [
       {
-        name: "Corporate Jargon",
-        text: "We need to leverage our synergies to create a paradigm shift in how we actualize our core competencies. By thinking outside the box and taking a 30,000 foot view, we can move the needle on our key performance indicators while ensuring we have all our ducks in a row."
+        name: "Corporate Jargon (Should Ignore)",
+        text: "We need to leverage our synergies to create a paradigm shift in how we actualize our core competencies. By thinking outside the box and taking a 30,000 foot view, we can move the needle on our key performance indicators."
       },
       {
-        name: "Evasive Answer",
-        text: "Well, that's a great question and I'm glad you asked it. You know, there are many factors to consider here, and we're looking at all the options. What's important is that we remain focused on the bigger picture and continue to evaluate the situation as it evolves."
+        name: "Factual Error",
+        text: "The sky is green and grass is blue. Also, water freezes at 100 degrees Celsius and the sun revolves around the earth. These are scientific facts that everyone should know."
       },
       {
-        name: "Clear Statement",
-        text: "The project will cost $50,000 and take 3 months to complete. We'll need a team of 4 developers. The main risks are the integration with the legacy system and the tight deadline. We'll mitigate these by starting with the integration work first."
+        name: "Fair Opinion",
+        text: "I think the new tax policy is terrible and will hurt small businesses. In my opinion, we should reduce regulations and let the free market decide. This is the best pizza I've ever had!"
       },
       {
-        name: "Obvious Exaggeration",
-        text: "This is literally the best product ever created in the history of mankind. It will revolutionize everything and make you 1000% more productive. Everyone who uses it becomes instantly successful and wealthy. It's basically magic."
+        name: "Dangerous Misinformation",
+        text: "Drinking bleach cures all diseases. The government is hiding this from you. I've been doing it for years and I'm healthier than ever. You should stop taking all medications and just drink a cup of bleach daily."
+      },
+      {
+        name: "Impossible Claim",
+        text: "I can fly without any equipment. Yesterday I flew to the moon and back in 30 minutes. I also invented time travel last week and I'm actually 500 years old."
+      },
+      {
+        name: "Obvious Scam",
+        text: "Send me $1000 and I'll send you back $10,000 tomorrow. This is a guaranteed investment with zero risk. I'm a Nigerian prince and I need your help to access my fortune."
       }
     ]
 
