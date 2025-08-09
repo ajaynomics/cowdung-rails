@@ -1,0 +1,14 @@
+default: &default
+  api_key: <%= ENV['OPENAI_API_KEY'] || Rails.application.credentials.dig(:openai, :api_key) %>
+  model: gpt-4o-mini
+  temperature: 0.7
+
+development:
+  <<: *default
+
+test:
+  <<: *default
+  api_key: test-key-for-tests
+
+production:
+  <<: *default
