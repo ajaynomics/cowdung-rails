@@ -21,11 +21,19 @@ class TranscriptionSegment < ApplicationRecord
       parameters: {
         model: "whisper-1",
         file: temp_file,
-        language: "en"
+        language: "en",
+        response_format: "verbose_json",
+        timestamp_granularities: [ "segment", "word" ]
       }
     )
 
-    { success?: true, text: response["text"] }
+    # Response includes segments with timestamps
+    {
+      success?: true,
+      text: response["text"],
+      words: response["words"],
+      segments: response["segments"]
+    }
   rescue => e
     Rails.logger.error "Whisper transcription error: #{e.message}"
     { success?: false, error: e.message }
