@@ -70,7 +70,6 @@ export default class extends Controller {
         }
         
         this.pcmChunks.push(pcm16)
-        console.log(`Captured PCM chunk: ${pcm16.length} samples, total chunks: ${this.pcmChunks.length}`)
       }
       
       // Set up ActionCable subscription
@@ -78,7 +77,6 @@ export default class extends Controller {
       
       // Send PCM data every second
       this.sendInterval = setInterval(() => {
-        console.log(`Send interval fired - chunks: ${this.pcmChunks.length}, subscription: ${!!this.subscription}, muted: ${this.isMuted}`)
         if (this.pcmChunks.length > 0 && this.subscription && !this.isMuted) {
           // Combine PCM chunks
           const totalLength = this.pcmChunks.reduce((acc, chunk) => acc + chunk.length, 0)
@@ -93,7 +91,6 @@ export default class extends Controller {
           const buffer = combined.buffer
           const base64 = btoa(String.fromCharCode(...new Uint8Array(buffer)))
           
-          console.log(`Sending PCM audio: ${totalLength} samples (${(totalLength/this.sampleRate).toFixed(2)}s)`)
           this.subscription.perform('receive_audio', { 
             audio_chunk: base64,
             format: 'pcm16',

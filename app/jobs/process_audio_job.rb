@@ -17,11 +17,8 @@ class ProcessAudioJob < ApplicationJob
       return
     end
 
-    Rails.logger.info "Found #{chunks.count} chunks to process"
-
     # Check for overlap with previous windows
     overlap_size = transcription_session.overlap_size(start_sequence, end_sequence)
-    Rails.logger.info "Overlap size with previous windows: #{overlap_size} chunks"
 
     # Transcribe the chunks
     result = TranscriptionSegment.transcribe_chunks(chunks)
@@ -31,14 +28,9 @@ class ProcessAudioJob < ApplicationJob
       words = result[:words] || []
       segments = result[:segments] || []
 
-      # Log timestamp information if available
-      if words.any?
-        Rails.logger.info "Transcription has #{words.length} words with timestamps"
-      end
 
       # Handle deduplication if this window overlaps with previous ones
       if overlap_size > 0 && transcription_session.last_processed_text.present?
-        Rails.logger.info "Deduplicating overlapping transcription"
         # Find the new content by removing the overlap
         # Use timestamp data if available for more accurate deduplication
         new_text = if words.any?
