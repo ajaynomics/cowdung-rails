@@ -85,9 +85,13 @@ class ProcessAudioJobTest < ActiveJob::TestCase
     ProcessAudioJob.perform_now(session_id, 0, 2, "rolling")
 
     # Process with rolling context
+    Rails.logger.level = Logger::DEBUG
     ProcessAudioJob.perform_now(session_id, 5, 14, "rolling")
+    Rails.logger.level = Logger::INFO
 
     # Verify transcript accumulated correctly
+    # The second call includes "Hello world" as context, so our deduplication
+    # should only add "this is a test"
     transcript = SessionTranscript.find_by(session_id: session_id)
     assert_equal "Hello world this is a test", transcript.current_text.strip
   end
