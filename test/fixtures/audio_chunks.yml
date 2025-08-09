@@ -4,10 +4,12 @@ sample_chunk:
   session_id: fixture-session-123
   data: "base64encodedaudiodata"
   sequence: 0
-  processed: false
+  format: pcm16
+  sample_rate: 44100
 
 another_chunk:
   session_id: fixture-session-123
   data: "anotherbase64chunk"
   sequence: 1
-  processed: false
+  format: pcm16
+  sample_rate: 44100
