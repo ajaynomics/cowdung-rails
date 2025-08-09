@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_09_053501) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_09_053912) do
   create_table "audio_chunks", force: :cascade do |t|
     t.string "session_id", null: false
     t.text "data", null: false
@@ -32,6 +32,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_09_053501) do
     t.text "analyzed_text"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "is_duplicate", default: false, null: false
+    t.index ["is_duplicate"], name: "index_bullshit_analyses_on_is_duplicate"
     t.index ["session_id"], name: "index_bullshit_analyses_on_session_id"
   end
 

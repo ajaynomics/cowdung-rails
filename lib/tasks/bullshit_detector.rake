@@ -116,41 +116,39 @@ namespace :bullshit do
 
     session_id = "dedup-test-#{Time.current.to_i}"
 
-    # Create first detection
-    analysis1 = BullshitAnalysis.create!(
-      session_id: session_id,
-      detected: true,
-      confidence: 0.9,
-      bs_type: "jargon",
-      explanation: "Corporate jargon detected",
-      quote: "leverage our synergies",
-      analyzed_text: "We need to leverage our synergies"
-    )
+    # First detection: factual error
+    text1 = "The sky is green and grass is blue"
+    analysis1 = BullshitAnalysis.analyze_transcript(session_id, text1)
 
-    puts "Created first detection: #{analysis1.quote}"
+    puts "First detection:"
+    puts "  Detected: #{analysis1.detected?}"
+    puts "  Is duplicate: #{analysis1.is_duplicate}"
+    puts "  Quote: #{analysis1.quote}" if analysis1.detected?
 
-    # Try to detect similar BS (should be marked as duplicate)
-    text = "We need to leverage our synergies and create paradigm shifts"
-    analysis2 = BullshitAnalysis.analyze_transcript(session_id, text)
+    # Try to detect the same BS again (should be marked as duplicate)
+    text2 = "As I was saying, the sky is green and water flows upward"
+    analysis2 = BullshitAnalysis.analyze_transcript(session_id, text2)
 
-    if analysis2
-      puts "\nSecond analysis:"
-      puts "  Detected: #{analysis2.detected?}"
-      puts "  Type: #{analysis2.bs_type}"
-      puts "  Explanation: #{analysis2.explanation}"
-    else
-      puts "\nSecond analysis was skipped as duplicate"
-    end
+    puts "\nSecond analysis (same BS):"
+    puts "  Detected: #{analysis2.detected?}"
+    puts "  Is duplicate: #{analysis2.is_duplicate}"
+    puts "  Quote: #{analysis2.quote}" if analysis2.detected?
 
-    # Try different BS (should be detected)
-    text2 = "This revolutionary product will guarantee 1000% ROI"
-    analysis3 = BullshitAnalysis.analyze_transcript(session_id, text2)
+    # Try different BS (should be detected as new)
+    text3 = "I can fly without equipment and I'm 500 years old"
+    analysis3 = BullshitAnalysis.analyze_transcript(session_id, text3)
 
-    if analysis3
-      puts "\nThird analysis (different BS):"
-      puts "  Detected: #{analysis3.detected?}"
-      puts "  Type: #{analysis3.bs_type}"
-      puts "  Explanation: #{analysis3.explanation}"
+    puts "\nThird analysis (different BS):"
+    puts "  Detected: #{analysis3.detected?}"
+    puts "  Is duplicate: #{analysis3.is_duplicate}"
+    puts "  Quote: #{analysis3.quote}" if analysis3.detected?
+
+    # Check what would be shown to user (non-duplicate detections only)
+    unique_detections = BullshitAnalysis.for_session(session_id).detected.not_duplicate
+
+    puts "\nUnique BS detections that would trigger pop-ups: #{unique_detections.count}"
+    unique_detections.each do |d|
+      puts "  - #{d.bs_type}: #{d.quote}"
     end
 
     # Cleanup

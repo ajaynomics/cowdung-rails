@@ -22,7 +22,12 @@ class BullshitAnalysis < ApplicationRecord
 
     Only flag something if it's genuinely misleading or factually wrong. Don't be a pedant.
 
-    IMPORTANT: You will receive recent BS detections from the last few minutes. Only report NEW bullshit that hasn't been called out already.
+    IMPORTANT: You will receive ALL prior BS detections for this session. Check if the current BS is essentially the same as something already detected:
+    - Same false claim being repeated (e.g. "sky is green" detected before, now saying "sky is green" again)
+    - Same type of misinformation about the same topic
+    - Continuing the same scam or impossible claim
+
+    If it's the same BS as before, mark is_duplicate as true. Only mark as false if it's a DIFFERENT lie/error.
 
     Always respond with this exact JSON structure:
     {
@@ -41,24 +46,24 @@ class BullshitAnalysis < ApplicationRecord
   scope :for_session, ->(session_id) { where(session_id: session_id) }
   scope :detected, -> { where(detected: true) }
   scope :recent, -> { order(created_at: :desc) }
+  scope :not_duplicate, -> { where(is_duplicate: false) }
 
-  def self.analyze_transcript(session_id, transcript_text, recent_detections = nil)
+  def self.analyze_transcript(session_id, transcript_text, all_prior_detections = nil)
     return nil if transcript_text.blank? || transcript_text.length < 30
 
-    # Get recent detections if not provided
-    recent_detections ||= for_session(session_id)
-                         .detected
-                         .where("created_at > ?", 2.minutes.ago)
-                         .order(created_at: :desc)
-                         .limit(5)
+    # Get ALL prior detections for this session
+    all_prior_detections ||= for_session(session_id)
+                            .detected
+                            .where(is_duplicate: false) # Only consider non-duplicate detections
+                            .order(created_at: :desc)
 
-    # Prepare context about recent detections
-    recent_context = if recent_detections.any?
-      recent_summary = recent_detections.map do |d|
-        "- #{d.bs_type}: #{d.quote} (#{d.explanation})"
+    # Prepare context about ALL prior detections
+    prior_context = if all_prior_detections.any?
+      prior_summary = all_prior_detections.map do |d|
+        "- #{d.bs_type}: \"#{d.quote}\" (#{d.explanation})"
       end.join("\n")
 
-      "\n\nRecent BS already detected in the last 2 minutes:\n#{recent_summary}"
+      "\n\nALL prior BS detections for this session:\n#{prior_summary}"
     else
       ""
     end
@@ -70,7 +75,7 @@ class BullshitAnalysis < ApplicationRecord
         model: MODEL,
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
-          { role: "user", content: "Analyze this transcript for bullshit:\n\n#{transcript_text}#{recent_context}" }
+          { role: "user", content: "Analyze this transcript for bullshit:\n\n#{transcript_text}#{prior_context}" }
         ],
         response_format: { type: "json_object" },
         temperature: 0.7
@@ -81,13 +86,7 @@ class BullshitAnalysis < ApplicationRecord
 
     Rails.logger.info "Bullshit detection result: #{result.inspect}"
 
-    # Skip if it's a duplicate
-    if result["is_duplicate"]
-      Rails.logger.info "Skipping duplicate BS detection"
-      return nil
-    end
-
-    # Create and return the analysis record
+    # Always create a record, but mark duplicates
     create!(
       session_id: session_id,
       detected: result["bullshit_detected"] || false,
@@ -95,7 +94,8 @@ class BullshitAnalysis < ApplicationRecord
       bs_type: result["type"],
       explanation: result["explanation"],
       quote: result["quote"],
-      analyzed_text: transcript_text
+      analyzed_text: transcript_text,
+      is_duplicate: result["is_duplicate"] || false
     )
   rescue => e
     Rails.logger.error "Bullshit detection failed: #{e.message}"
@@ -105,7 +105,8 @@ class BullshitAnalysis < ApplicationRecord
       session_id: session_id,
       detected: false,
       analyzed_text: transcript_text,
-      explanation: "Analysis failed: #{e.message}"
+      explanation: "Analysis failed: #{e.message}",
+      is_duplicate: false
     )
   end
 end

@@ -14,11 +14,11 @@ class DetectBullshitJob < ApplicationJob
     # Perform the analysis with deduplication
     analysis = BullshitAnalysis.analyze_transcript(session_id, session_transcript.current_text)
 
-    # Skip if it was a duplicate or no analysis returned
+    # Skip if no analysis returned
     return unless analysis
 
-    # If bullshit was detected, broadcast it
-    if analysis.detected?
+    # If bullshit was detected AND it's not a duplicate, broadcast it
+    if analysis.detected? && !analysis.is_duplicate
       ActionCable.server.broadcast(
         "detector_#{session_id}",
         {
@@ -33,6 +33,8 @@ class DetectBullshitJob < ApplicationJob
       )
 
       Rails.logger.info "🚨 Bullshit detected in session #{session_id}: #{analysis.explanation}"
+    elsif analysis.detected? && analysis.is_duplicate
+      Rails.logger.info "📋 Duplicate BS detected in session #{session_id}: #{analysis.quote}"
     end
   rescue => e
     Rails.logger.error "Bullshit detection failed for session #{session_id}: #{e.message}"
