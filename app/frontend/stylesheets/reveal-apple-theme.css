@@ -1,0 +1,311 @@
+/**
+ * Apple-inspired theme for reveal.js
+ * Clean, sophisticated, professional with subtle gradients
+ * 
+ * By TruthGuard AI Team
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  /* Professional color palette */
+  --apple-black: #1d1d1f;
+  --apple-gray-dark: #424245;
+  --apple-gray: #86868b;
+  --apple-gray-light: #f5f5f7;
+  --apple-white: #ffffff;
+  
+  /* Accent colors - subtle and sophisticated */
+  --apple-blue: #0071e3;
+  --apple-blue-light: #64a8f5;
+  --apple-purple: #bf4fcf;
+  --apple-purple-light: #e8b4f0;
+  --apple-green: #34c759;
+  --apple-green-light: #90e8a5;
+  --apple-orange: #ff9500;
+  --apple-orange-light: #ffb95d;
+  --apple-red: #ff3b30;
+  
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, #0071e3 0%, #0051a2 100%);
+  --gradient-subtle: linear-gradient(180deg, #ffffff 0%, #f5f5f7 100%);
+  --gradient-mesh: radial-gradient(at 40% 20%, hsla(210, 100%, 56%, 0.3) 0px, transparent 50%),
+                   radial-gradient(at 80% 0%, hsla(280, 100%, 70%, 0.2) 0px, transparent 50%),
+                   radial-gradient(at 0% 50%, hsla(355, 100%, 60%, 0.1) 0px, transparent 50%);
+  
+  /* Typography */
+  --r-main-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --r-heading-font: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --r-code-font: 'JetBrains Mono', 'Consolas', 'Monaco', monospace;
+  
+  /* Sizes */
+  --r-main-font-size: 42px;
+  --r-heading1-size: 96px;
+  --r-heading2-size: 72px;
+  --r-heading3-size: 56px;
+  --r-heading4-size: 42px;
+  
+  /* Spacing */
+  --r-block-margin: 32px;
+  --r-heading-margin: 0 0 48px 0;
+  
+  /* Colors */
+  --r-background-color: var(--apple-white);
+  --r-main-color: var(--apple-black);
+  --r-heading-color: var(--apple-black);
+  --r-link-color: var(--apple-blue);
+  --r-link-color-hover: var(--apple-blue-light);
+  --r-selection-background-color: rgba(0, 113, 227, 0.15);
+  --r-selection-color: var(--apple-black);
+}
+
+/* Global styles */
+.reveal-viewport {
+  background: var(--r-background-color);
+  background-image: var(--gradient-mesh);
+}
+
+.reveal {
+  font-family: var(--r-main-font);
+  font-size: var(--r-main-font-size);
+  font-weight: 400;
+  color: var(--r-main-color);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Typography */
+.reveal h1,
+.reveal h2,
+.reveal h3,
+.reveal h4,
+.reveal h5,
+.reveal h6 {
+  margin: var(--r-heading-margin);
+  color: var(--r-heading-color);
+  font-family: var(--r-heading-font);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  text-transform: none;
+  word-wrap: break-word;
+}
+
+.reveal h1 {
+  font-size: var(--r-heading1-size);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+}
+
+.reveal h2 {
+  font-size: var(--r-heading2-size);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.reveal h3 {
+  font-size: var(--r-heading3-size);
+  font-weight: 600;
+}
+
+.reveal h4 {
+  font-size: var(--r-heading4-size);
+  font-weight: 500;
+}
+
+/* Paragraphs */
+.reveal p {
+  margin: var(--r-block-margin) 0;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+.reveal .lead {
+  font-size: 1.25em;
+  font-weight: 400;
+  color: var(--apple-gray-dark);
+  line-height: 1.4;
+}
+
+/* Strong emphasis */
+.reveal strong,
+.reveal b {
+  font-weight: 600;
+}
+
+/* Links */
+.reveal a {
+  color: var(--r-link-color);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.reveal a:hover {
+  color: var(--r-link-color-hover);
+}
+
+/* Lists */
+.reveal ul,
+.reveal ol {
+  display: inline-block;
+  text-align: left;
+  margin: 0 0 0 1em;
+  line-height: 1.5;
+}
+
+.reveal ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.reveal ul li {
+  position: relative;
+  padding-left: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+.reveal ul li::before {
+  content: '•';
+  color: var(--apple-gray);
+  font-weight: 600;
+  position: absolute;
+  left: 0;
+}
+
+/* Code */
+.reveal pre {
+  display: block;
+  position: relative;
+  margin: var(--r-block-margin) auto;
+  text-align: left;
+  font-size: 0.55em;
+  font-family: var(--r-code-font);
+  line-height: 1.4;
+  word-wrap: break-word;
+  background: var(--apple-gray-light);
+  border-radius: 12px;
+  padding: 1.5em;
+  overflow: auto;
+  max-height: 500px;
+}
+
+.reveal code {
+  font-family: var(--r-code-font);
+  text-transform: none;
+  background: var(--apple-gray-light);
+  padding: 0.2em 0.4em;
+  border-radius: 6px;
+  font-size: 0.85em;
+}
+
+/* Tables */
+.reveal table {
+  margin: auto;
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 0.9em;
+}
+
+.reveal table th {
+  font-weight: 600;
+  text-align: left;
+  padding: 1em;
+  border-bottom: 2px solid var(--apple-gray-light);
+}
+
+.reveal table td {
+  text-align: left;
+  padding: 1em;
+  border-bottom: 1px solid var(--apple-gray-light);
+}
+
+/* Blockquotes */
+.reveal blockquote {
+  width: 90%;
+  margin: var(--r-block-margin) auto;
+  padding: 0 0 0 2em;
+  font-style: normal;
+  font-size: 1.1em;
+  color: var(--apple-gray-dark);
+  border-left: 4px solid var(--apple-gray-light);
+}
+
+/* Horizontal rules */
+.reveal hr {
+  border: none;
+  height: 1px;
+  background: var(--apple-gray-light);
+  margin: 48px 0;
+}
+
+/* Progress bar */
+.reveal .progress {
+  background: var(--apple-gray-light);
+  color: var(--apple-blue);
+  height: 3px;
+}
+
+.reveal .progress span {
+  background: var(--apple-blue);
+  transition: width 800ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Navigation controls */
+.reveal .controls {
+  color: var(--apple-gray);
+}
+
+.reveal .controls button:hover {
+  color: var(--apple-blue);
+}
+
+/* Slide number */
+.reveal .slide-number {
+  color: var(--apple-gray);
+  background: transparent;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Speaker notes */
+.reveal .speaker-notes {
+  font-family: var(--r-main-font);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* Fragment animations */
+.reveal .slides section .fragment {
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.reveal .slides section .fragment.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Special backgrounds */
+.reveal section[data-background-color="#000000"] h1,
+.reveal section[data-background-color="#000000"] h2,
+.reveal section[data-background-color="#000000"] h3,
+.reveal section[data-background-color="#000000"] p {
+  color: var(--apple-white);
+}
+
+/* Images */
+.reveal section img {
+  margin: 15px 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+/* Print support */
+@media print {
+  .reveal {
+    background: white;
+    color: black;
+  }
+}

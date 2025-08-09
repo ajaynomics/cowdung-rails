@@ -23,57 +23,52 @@ class ProcessAudioJob < ApplicationJob
 
       # For rolling mode with context, extract only the new part
       if mode == "rolling" && start_sequence > 0
-        # First try timestamp-based extraction if we have word timings
-        if words.any? && words.first["start"]
-          # We process every 2 chunks, so new content starts after 10 seconds of context
-          # (assuming 1 second per chunk and we keep up to 30 chunks of context)
-          context_duration = 10.0  # seconds
-          new_words = words.select { |w| w["start"] && w["start"] >= context_duration }
+        existing_text = session_transcript.current_text.to_s.strip
 
-          if new_words.any?
-            new_text = new_words.map { |w| w["word"] }.join(" ").strip
-            Rails.logger.debug "Used timestamp extraction: #{new_text}"
-          else
-            new_text = ""
+        # Simple approach: store the last processed text to avoid duplication
+        last_processed = session_transcript.last_processed_text || ""
+
+        if transcribed_text == last_processed
+          # Exact duplicate - skip it
+          new_text = ""
+          Rails.logger.info "Skipping duplicate transcription"
+        elsif existing_text.present? && transcribed_text.start_with?(existing_text)
+          # The transcription starts with our existing text - take what's after
+          new_text = transcribed_text[existing_text.length..].strip
+          Rails.logger.info "Found clean continuation, adding: #{new_text.truncate(50)}"
+        elsif existing_text.present?
+          # Try to find overlap
+          # Split existing text into words and look for where it ends in the new transcription
+          existing_words = existing_text.split(/\s+/)
+
+          # Try different tail lengths to find overlap
+          overlap_found = false
+          [ 10, 8, 6, 4, 2 ].each do |word_count|
+            next if existing_words.length < word_count
+
+            tail_words = existing_words.last(word_count).join(" ")
+            if transcribed_text.include?(tail_words)
+              # Found where the existing text ends
+              index = transcribed_text.rindex(tail_words)
+              new_text = transcribed_text[(index + tail_words.length)..].strip
+              overlap_found = true
+              Rails.logger.info "Found overlap with #{word_count} words, adding: #{new_text.truncate(50)}"
+              break
+            end
+          end
+
+          unless overlap_found
+            # No clear overlap - this might be completely new content
+            new_text = transcribed_text
+            Rails.logger.info "No overlap found, using full text"
           end
         else
-          # Fallback to text-based deduplication
-          existing_text = session_transcript.current_text.to_s.strip
-
-          if existing_text.present?
-            # Find where existing content ends in the new transcription
-            # Look for the last 30-100 chars of existing text
-            search_lengths = [ 100, 80, 60, 40, 30, 20, 10 ]
-            overlap_found = false
-
-            search_lengths.each do |length|
-              if existing_text.length <= length
-                # Use the whole existing text if it's shorter than our search length
-                search_text = existing_text
-              else
-                search_text = existing_text.last(length)
-              end
-
-              if transcribed_text.include?(search_text)
-                # Found overlap! Extract only what comes after
-                index = transcribed_text.rindex(search_text)
-                new_text = transcribed_text[(index + search_text.length)..]&.strip || ""
-                overlap_found = true
-                Rails.logger.debug "Found overlap with #{length} chars, search: '#{search_text}', new text: '#{new_text.truncate(50)}'"
-                break
-              end
-            end
-
-            unless overlap_found
-              # No overlap - might be completely new content
-              new_text = transcribed_text
-              Rails.logger.debug "No overlap found, using full text"
-            end
-          else
-            # First transcription or no existing text
-            new_text = transcribed_text
-          end
+          # First transcription
+          new_text = transcribed_text
         end
+
+        # Store what we processed to detect exact duplicates next time
+        session_transcript.update_column(:last_processed_text, transcribed_text)
       else
         # First transcription or final mode - use all text
         new_text = transcribed_text

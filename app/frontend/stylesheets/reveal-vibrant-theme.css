@@ -1,0 +1,378 @@
+/**
+ * Vibrant theme for reveal.js
+ * Inspired by Telus's animal campaigns - bold, memorable, emotional
+ * 
+ * By TruthGuard AI Team
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;900&family=Space+Grotesk:wght@700&display=swap');
+
+/*********************************************
+ * GLOBAL STYLES
+ *********************************************/
+
+:root {
+  /* Vibrant color palette */
+  --vibrant-purple: #7c3aed;
+  --vibrant-pink: #ec4899;
+  --vibrant-blue: #3b82f6;
+  --vibrant-green: #10b981;
+  --vibrant-orange: #f97316;
+  --vibrant-yellow: #fbbf24;
+  --vibrant-teal: #14b8a6;
+  --vibrant-red: #ef4444;
+  
+  /* Backgrounds */
+  --r-background-color: #fafafa;
+  --r-background-gradient: linear-gradient(135deg, #fff 0%, #f3f4f6 100%);
+  
+  /* Typography */
+  --r-main-font: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+  --r-main-font-size: 40px;
+  --r-main-color: #1f2937;
+  --r-block-margin: 24px;
+  
+  /* Headings */
+  --r-heading-margin: 0 0 24px 0;
+  --r-heading-font: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  --r-heading-color: #111827;
+  --r-heading-line-height: 1.1;
+  --r-heading-letter-spacing: -0.03em;
+  --r-heading-text-transform: none;
+  --r-heading-text-shadow: none;
+  --r-heading-font-weight: 700;
+  --r-heading1-size: 4em;
+  --r-heading2-size: 3em;
+  --r-heading3-size: 2em;
+  --r-heading4-size: 1.4em;
+  
+  /* Links and code */
+  --r-code-font: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+  --r-link-color: var(--vibrant-blue);
+  --r-link-color-hover: var(--vibrant-purple);
+  --r-selection-background-color: rgba(124, 58, 237, 0.15);
+  --r-selection-color: #000;
+}
+
+.reveal-viewport {
+  background: var(--r-background-gradient);
+}
+
+.reveal {
+  font-family: var(--r-main-font);
+  font-size: var(--r-main-font-size);
+  font-weight: 400;
+  color: var(--r-main-color);
+}
+
+/*********************************************
+ * HEADERS - Bold and Playful
+ *********************************************/
+
+.reveal h1,
+.reveal h2,
+.reveal h3,
+.reveal h4,
+.reveal h5,
+.reveal h6 {
+  margin: var(--r-heading-margin);
+  color: var(--r-heading-color);
+  font-family: var(--r-heading-font);
+  font-weight: var(--r-heading-font-weight);
+  line-height: var(--r-heading-line-height);
+  letter-spacing: var(--r-heading-letter-spacing);
+  text-transform: var(--r-heading-text-transform);
+  text-shadow: var(--r-heading-text-shadow);
+  word-wrap: break-word;
+}
+
+.reveal h1 {
+  font-size: var(--r-heading1-size);
+  font-weight: 900;
+}
+
+/* Vibrant gradient headings */
+.reveal h1.gradient-purple {
+  background: linear-gradient(135deg, var(--vibrant-purple) 0%, var(--vibrant-pink) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.reveal h2.gradient-blue {
+  background: linear-gradient(135deg, var(--vibrant-blue) 0%, var(--vibrant-teal) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.reveal h2.gradient-green {
+  background: linear-gradient(135deg, var(--vibrant-green) 0%, var(--vibrant-teal) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.reveal h2.gradient-orange {
+  background: linear-gradient(135deg, var(--vibrant-orange) 0%, var(--vibrant-yellow) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/*********************************************
+ * CONTENT
+ *********************************************/
+
+.reveal p {
+  margin: var(--r-block-margin) 0;
+  line-height: 1.7;
+  font-size: 1.1em;
+}
+
+.reveal strong,
+.reveal b {
+  font-weight: 600;
+  color: var(--vibrant-purple);
+}
+
+/*********************************************
+ * VIBRANT BACKGROUNDS
+ *********************************************/
+
+/* Purple gradient */
+.reveal section[data-background-gradient*="purple"] {
+  color: white;
+}
+
+.reveal section[data-background-gradient*="purple"] h1,
+.reveal section[data-background-gradient*="purple"] h2,
+.reveal section[data-background-gradient*="purple"] h3 {
+  color: white;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Blue gradient */
+.reveal section[data-background-gradient*="blue"] {
+  color: white;
+}
+
+/* Green gradient */
+.reveal section[data-background-gradient*="green"] {
+  color: white;
+}
+
+/* Orange gradient */
+.reveal section[data-background-gradient*="orange"] {
+  color: white;
+}
+
+/*********************************************
+ * ANIMAL-INSPIRED COMPONENTS
+ *********************************************/
+
+/* Rounded, soft cards */
+.reveal .animal-card {
+  background: white;
+  border-radius: 24px;
+  padding: 2em;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  border: 2px solid transparent;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.reveal .animal-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.12);
+  border-color: var(--vibrant-purple);
+}
+
+/* Colorful badges */
+.reveal .animal-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5em 1.25em;
+  border-radius: 100px;
+  font-weight: 600;
+  font-size: 0.9em;
+  transition: all 0.2s ease;
+  margin: 0.25em;
+}
+
+.reveal .animal-badge-purple {
+  background: var(--vibrant-purple);
+  color: white;
+}
+
+.reveal .animal-badge-blue {
+  background: var(--vibrant-blue);
+  color: white;
+}
+
+.reveal .animal-badge-green {
+  background: var(--vibrant-green);
+  color: white;
+}
+
+.reveal .animal-badge-orange {
+  background: var(--vibrant-orange);
+  color: white;
+}
+
+/* Animal emoji styling */
+.reveal .animal-icon {
+  font-size: 3em;
+  display: inline-block;
+  animation: animalBounce 2s ease-in-out infinite;
+}
+
+@keyframes animalBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Metrics with personality */
+.reveal .vibrant-metric {
+  font-size: 3em;
+  font-weight: 900;
+  font-family: var(--r-heading-font);
+  line-height: 1;
+}
+
+.reveal .vibrant-metric-purple {
+  color: var(--vibrant-purple);
+}
+
+.reveal .vibrant-metric-blue {
+  color: var(--vibrant-blue);
+}
+
+.reveal .vibrant-metric-green {
+  color: var(--vibrant-green);
+}
+
+.reveal .vibrant-metric-orange {
+  color: var(--vibrant-orange);
+}
+
+/* Fun progress bars */
+.reveal .vibrant-progress {
+  height: 16px;
+  background: #f3f4f6;
+  border-radius: 100px;
+  overflow: hidden;
+  position: relative;
+}
+
+.reveal .vibrant-progress-bar {
+  height: 100%;
+  border-radius: 100px;
+  background: linear-gradient(90deg, var(--vibrant-purple) 0%, var(--vibrant-pink) 100%);
+  transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.reveal .vibrant-progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 100%
+  );
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* CTA buttons with personality */
+.reveal .vibrant-cta {
+  display: inline-flex;
+  align-items: center;
+  padding: 1em 2em;
+  border-radius: 100px;
+  font-weight: 700;
+  font-size: 1.1em;
+  background: linear-gradient(135deg, var(--vibrant-purple) 0%, var(--vibrant-pink) 100%);
+  color: white;
+  box-shadow: 0 8px 24px rgba(124, 58, 237, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+  cursor: pointer;
+}
+
+.reveal .vibrant-cta:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 12px 32px rgba(124, 58, 237, 0.4);
+}
+
+/* Feature lists with color */
+.reveal .vibrant-feature {
+  display: flex;
+  align-items: flex-start;
+  margin: 1.5em 0;
+  text-align: left;
+}
+
+.reveal .vibrant-feature-icon {
+  font-size: 2em;
+  margin-right: 0.75em;
+  flex-shrink: 0;
+}
+
+/*********************************************
+ * NAVIGATION
+ *********************************************/
+
+.reveal .controls {
+  color: var(--vibrant-purple);
+}
+
+.reveal .progress {
+  background: rgba(0, 0, 0, 0.1);
+  color: var(--vibrant-purple);
+  height: 6px;
+}
+
+.reveal .progress span {
+  background: linear-gradient(90deg, var(--vibrant-purple) 0%, var(--vibrant-pink) 100%);
+}
+
+/*********************************************
+ * FRAGMENTS with personality
+ *********************************************/
+
+.reveal .slides section .fragment.bounce-in {
+  opacity: 0;
+  transform: scale(0.3);
+  transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.reveal .slides section .fragment.bounce-in.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/*********************************************
+ * PRINT STYLES
+ *********************************************/
+
+@media print {
+  .reveal {
+    background: white;
+    color: black;
+  }
+  
+  .reveal h1, .reveal h2, .reveal h3, .reveal h4, .reveal h5, .reveal h6 {
+    color: black;
+  }
+}

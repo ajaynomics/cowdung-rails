@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_09_053912) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_09_185239) do
   create_table "audio_chunks", force: :cascade do |t|
     t.string "session_id", null: false
     t.text "data", null: false
@@ -45,6 +45,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_09_053912) do
     t.string "status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "last_processed_text"
     t.index ["session_id"], name: "index_session_transcripts_on_session_id"
   end
 

@@ -1,0 +1,172 @@
+/**
+ * Tailwind integration for reveal.js slides
+ * Use these utilities within slide content without breaking reveal.js
+ */
+
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+/* Safe Tailwind components for slides */
+@layer components {
+  /* Grid layouts that work within slides */
+  .slide-grid {
+    @apply grid gap-8 items-center;
+  }
+  
+  .slide-grid-2 {
+    @apply slide-grid grid-cols-2;
+  }
+  
+  .slide-grid-3 {
+    @apply slide-grid grid-cols-3;
+  }
+  
+  /* Card components */
+  .slide-card {
+    @apply bg-white/5 border border-white/10 rounded-xl p-6 backdrop-blur-sm;
+    @apply shadow-xl transition-all duration-300;
+  }
+  
+  .slide-card:hover {
+    @apply bg-white/10 transform -translate-y-1 shadow-2xl;
+  }
+  
+  /* Metric displays */
+  .slide-metric {
+    @apply text-5xl font-black bg-gradient-to-r from-blue-400 to-cyan-300;
+    @apply bg-clip-text text-transparent;
+  }
+  
+  .slide-metric-label {
+    @apply text-lg text-gray-400 font-normal mt-2;
+  }
+  
+  /* Feature lists */
+  .slide-features {
+    @apply space-y-4 text-left max-w-2xl mx-auto;
+  }
+  
+  .slide-feature {
+    @apply flex items-start space-x-3 text-lg;
+  }
+  
+  .slide-feature-icon {
+    @apply text-2xl flex-shrink-0 mt-0.5;
+  }
+  
+  /* Timeline */
+  .slide-timeline {
+    @apply relative space-y-8;
+  }
+  
+  .slide-timeline::before {
+    @apply absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-400 to-cyan-300;
+    content: '';
+  }
+  
+  .slide-timeline-item {
+    @apply flex items-center space-x-4;
+  }
+  
+  .slide-timeline-dot {
+    @apply w-4 h-4 bg-blue-400 rounded-full relative z-10;
+    @apply ring-4 ring-black/50;
+  }
+  
+  /* Badges */
+  .slide-badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium;
+    @apply bg-white/10 text-white/90 border border-white/20;
+  }
+  
+  .slide-badge-success {
+    @apply bg-green-500/20 text-green-300 border-green-500/30;
+  }
+  
+  .slide-badge-warning {
+    @apply bg-amber-500/20 text-amber-300 border-amber-500/30;
+  }
+  
+  .slide-badge-error {
+    @apply bg-red-500/20 text-red-300 border-red-500/30;
+  }
+  
+  /* Progress bars */
+  .slide-progress {
+    @apply w-full h-3 bg-white/10 rounded-full overflow-hidden;
+  }
+  
+  .slide-progress-bar {
+    @apply h-full bg-gradient-to-r from-blue-400 to-cyan-300 rounded-full;
+    @apply transition-all duration-1000 ease-out;
+  }
+  
+  /* Call-to-action buttons */
+  .slide-cta {
+    @apply inline-flex items-center px-6 py-3 rounded-lg font-semibold;
+    @apply bg-gradient-to-r from-blue-500 to-cyan-400 text-white;
+    @apply transform transition-all duration-200;
+    @apply shadow-lg hover:shadow-xl hover:-translate-y-0.5;
+  }
+  
+  /* Stats container */
+  .slide-stats {
+    @apply grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto;
+  }
+  
+  .slide-stat {
+    @apply text-center p-4;
+  }
+  
+  .slide-stat-value {
+    @apply text-4xl font-bold text-transparent bg-clip-text;
+    @apply bg-gradient-to-r from-blue-400 to-cyan-300;
+  }
+  
+  .slide-stat-label {
+    @apply text-sm text-gray-400 mt-1;
+  }
+}
+
+/* Utility overrides for reveal.js compatibility */
+@layer utilities {
+  /* Safe spacing utilities */
+  .reveal .mt-slide { margin-top: 2rem; }
+  .reveal .mb-slide { margin-bottom: 2rem; }
+  .reveal .mx-slide { margin-left: auto; margin-right: auto; }
+  
+  /* Safe width constraints */
+  .reveal .max-w-slide { max-width: 90%; }
+  .reveal .max-w-slide-lg { max-width: 1200px; }
+  
+  /* Animation utilities */
+  .reveal .animate-slide-in {
+    animation: slideIn 0.5s ease-out;
+  }
+  
+  .reveal .animate-fade-up {
+    animation: fadeUp 0.8s ease-out;
+  }
+  
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}

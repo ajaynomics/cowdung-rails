@@ -1,0 +1,169 @@
+/**
+ * Pitch-specific customizations
+ * Complements reveal-modern-theme.css and pitch-tailwind.css
+ */
+
+/* Ensure Tailwind utilities work properly within reveal.js */
+.reveal .slides section {
+  /* Allow Tailwind positioning */
+  position: relative;
+}
+
+/* Fix reveal.js z-index issues with Tailwind components */
+.reveal .slide-card {
+  position: relative;
+  z-index: 1;
+}
+
+/* Smooth background transitions */
+.reveal .backgrounds .slide-background {
+  transition-duration: 1000ms;
+}
+
+/* Custom fragment animations */
+@keyframes fadeUpIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.reveal .slides section .fragment.fade-up {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.5s ease-out;
+}
+
+.reveal .slides section .fragment.fade-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Enhanced auto-animate transitions */
+.reveal [data-auto-animate-target] {
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Gradient text animation on hover */
+.reveal h1.gradient:hover,
+.reveal h2.gradient:hover,
+.reveal h3.gradient:hover {
+  background-size: 200% 200%;
+  animation: gradientShift 3s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Progress bar animations */
+.reveal .slide-progress-bar {
+  transform-origin: left center;
+  transform: scaleX(0);
+  animation: progressGrow 1.5s ease-out forwards;
+  animation-delay: 0.5s;
+}
+
+@keyframes progressGrow {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Ensure fragments animate only when visible */
+.reveal .slides section .fragment:not(.visible) .slide-progress-bar {
+  animation-play-state: paused;
+}
+
+.reveal .slides section .fragment.visible .slide-progress-bar {
+  animation-play-state: running;
+}
+
+/* Special styling for metric animations */
+.reveal .slide-metric {
+  opacity: 0;
+  animation: metricPulse 0.8s ease-out forwards;
+  animation-delay: 0.3s;
+}
+
+@keyframes metricPulse {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* CTA button hover effects */
+.reveal .slide-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(59, 130, 246, 0.4);
+}
+
+.reveal .slide-cta:active {
+  transform: translateY(-1px);
+}
+
+/* Badge animations */
+.reveal .slide-badge {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: badgeFadeIn 0.5s ease-out forwards;
+}
+
+.reveal .slide-badge:nth-child(1) { animation-delay: 0.1s; }
+.reveal .slide-badge:nth-child(2) { animation-delay: 0.2s; }
+.reveal .slide-badge:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes badgeFadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Timeline dot pulse */
+.reveal .slide-timeline-dot {
+  animation: dotPulse 2s ease-in-out infinite;
+}
+
+@keyframes dotPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(66, 165, 245, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(66, 165, 245, 0);
+  }
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+  .reveal .slide-grid-2,
+  .reveal .slide-grid-3 {
+    grid-template-columns: 1fr;
+  }
+  
+  .reveal .slide-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .reveal h1 {
+    font-size: 2.5em;
+  }
+  
+  .reveal h2 {
+    font-size: 2em;
+  }
+}

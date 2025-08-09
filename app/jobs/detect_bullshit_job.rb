@@ -4,6 +4,13 @@ class DetectBullshitJob < ApplicationJob
   def perform(session_id)
     Rails.logger.info "Running bullshit detection for session #{session_id}"
 
+    # Don't run BS detection if there's no recent audio activity
+    last_chunk = AudioChunk.for_session(session_id).maximum(:created_at)
+    if last_chunk && last_chunk < 10.seconds.ago
+      Rails.logger.info "Skipping BS detection - no recent audio activity"
+      return
+    end
+
     # Get the current transcript
     session_transcript = SessionTranscript.find_by(session_id: session_id)
     return unless session_transcript&.current_text.present?

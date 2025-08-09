@@ -6,7 +6,7 @@ export default class extends Controller {
     "startBtn", "stopBtn", "indicator", "status", 
     "visualizer", "connectionIndicator", "connectionStatus",
     "muteBtn", "permissionError", "permissionInstructions",
-    "results", "resultsList"
+    "results", "resultsList", "bsIndicator"
   ]
   
   connect() {
@@ -274,6 +274,11 @@ export default class extends Controller {
     this.startBtnTarget.classList.toggle("hidden", isRecording)
     this.stopBtnTarget.classList.toggle("hidden", !isRecording)
     this.indicatorTarget.classList.toggle("hidden", !isRecording)
+    
+    // Show/hide BS detection indicator
+    if (this.hasBsIndicatorTarget) {
+      this.bsIndicatorTarget.classList.toggle("hidden", !isRecording)
+    }
   }
   
   handlePermissionError(error) {

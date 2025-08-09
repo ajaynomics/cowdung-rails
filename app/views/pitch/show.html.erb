@@ -1,0 +1,498 @@
+<% content_for :head do %>
+  <%= vite_javascript_tag 'pitch' %>
+  <%= vite_stylesheet_tag 'pitch.css' %>
+<% end %>
+
+<div class="reveal" data-controller="presentation">
+  <div class="slides">
+    <!-- Title Slide -->
+    <section>
+      <h1 class="metric gradient-text">TruthGuard AI</h1>
+      <p class="lead">Real-time voice verification for high-stakes conversations</p>
+      <div class="fragment fade-in-up" style="margin-top: 48px;">
+        <span class="badge badge-primary">Voice AI</span>
+        <span class="badge badge-primary">Enterprise</span>
+        <span class="badge badge-primary">VAPI Powered</span>
+      </div>
+    </section>
+
+    <!-- Problem -->
+    <section>
+      <h2>The $78 Billion Problem</h2>
+      <p class="lead">Misinformation costs businesses billions annually</p>
+      <div class="grid grid-4" style="margin-top: 64px;">
+        <div class="metric-card fragment scale-in">
+          <div class="metric gradient-text">$78B</div>
+          <div class="metric-label">Annual cost</div>
+        </div>
+        <div class="metric-card fragment scale-in">
+          <div class="metric gradient-text">73%</div>
+          <div class="metric-label">Trust deficit</div>
+        </div>
+        <div class="metric-card fragment scale-in">
+          <div class="metric gradient-text">$26B</div>
+          <div class="metric-label">Procurement losses</div>
+        </div>
+        <div class="metric-card fragment scale-in">
+          <div class="metric gradient-text">2.3s</div>
+          <div class="metric-label">Average detection time</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Solution Overview -->
+    <section>
+      <section>
+        <h2>Introducing TruthGuard AI</h2>
+        <p class="lead">Voice-first truth verification platform</p>
+        <div class="glass-panel" style="margin-top: 48px;">
+          <div class="grid grid-3">
+            <div class="fragment fade-in-up">
+              <div class="feature-icon">🎯</div>
+              <h4>Finance</h4>
+              <p style="color: var(--apple-gray);">Vendor negotiations</p>
+            </div>
+            <div class="fragment fade-in-up">
+              <div class="feature-icon">⚖️</div>
+              <h4>Legal</h4>
+              <p style="color: var(--apple-gray);">Courtroom monitoring</p>
+            </div>
+            <div class="fragment fade-in-up">
+              <div class="feature-icon">📺</div>
+              <h4>Media</h4>
+              <p style="color: var(--apple-gray);">Real-time fact-checking</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h3>How It Works</h3>
+        <ul class="feature-list" style="max-width: 800px; margin: 48px auto;">
+          <li>
+            <div class="feature-icon">1</div>
+            <div class="feature-content">
+              <h4>Voice Capture</h4>
+              <p>Sub-200ms latency with VAPI's infrastructure</p>
+            </div>
+          </li>
+          <li>
+            <div class="feature-icon">2</div>
+            <div class="feature-content">
+              <h4>Real-time Analysis</h4>
+              <p>Advanced AI models verify claims instantly</p>
+            </div>
+          </li>
+          <li>
+            <div class="feature-icon">3</div>
+            <div class="feature-content">
+              <h4>Instant Alerts</h4>
+              <p>Stakeholders notified within milliseconds</p>
+            </div>
+          </li>
+        </ul>
+      </section>
+    </section>
+
+    <!-- Use Case: Vendor Negotiation -->
+    <section>
+      <section data-background-color="#000000">
+        <h2 style="color: white;">Demo: Enterprise Procurement</h2>
+        <p style="color: white; opacity: 0.8;">Protecting your bottom line</p>
+      </section>
+
+      <section>
+        <h3>Vendor Negotiation Analysis</h3>
+        <div class="apple-card" style="margin-top: 48px;">
+          <div style="margin-bottom: 32px;">
+            <p style="font-size: 21px; color: var(--apple-gray);">Claim detected:</p>
+            <p style="font-size: 28px; font-weight: 500;">"We guarantee 99.999% uptime"</p>
+          </div>
+          <div class="fragment">
+            <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
+              <span class="badge badge-danger">False Claim</span>
+              <span style="font-size: 19px; color: var(--apple-gray);">Confidence: 94%</span>
+            </div>
+            <p style="font-size: 19px;">Industry analysis shows actual uptime averaging 97.2% for similar solutions.</p>
+          </div>
+        </div>
+        
+        <div class="apple-card fragment" style="margin-top: 24px;">
+          <div style="margin-bottom: 32px;">
+            <p style="font-size: 21px; color: var(--apple-gray);">Claim detected:</p>
+            <p style="font-size: 28px; font-weight: 500;">"70% cost reduction guaranteed"</p>
+          </div>
+          <div class="fragment">
+            <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
+              <span class="badge badge-warning">Exaggeration</span>
+              <span style="font-size: 19px; color: var(--apple-gray);">Confidence: 87%</span>
+            </div>
+            <p style="font-size: 19px;">Historical data indicates 15-25% typical savings range.</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h3>Business Impact</h3>
+        <div class="grid grid-2" style="margin-top: 48px; max-width: 800px; margin-left: auto; margin-right: auto;">
+          <div class="glass-panel fragment">
+            <div class="progress-ring">
+              <svg width="120" height="120">
+                <circle cx="60" cy="60" r="54" class="progress-ring-bg"></circle>
+                <circle cx="60" cy="60" r="54" class="progress-ring-fill" style="stroke-dashoffset: 271.4;"></circle>
+              </svg>
+              <div class="progress-ring-text">20%</div>
+            </div>
+            <h4 style="margin-top: 24px;">Cost Savings</h4>
+            <p style="color: var(--apple-gray); font-size: 17px;">Average procurement savings</p>
+          </div>
+          
+          <div class="glass-panel fragment">
+            <div class="progress-ring">
+              <svg width="120" height="120">
+                <circle cx="60" cy="60" r="54" class="progress-ring-bg"></circle>
+                <circle cx="60" cy="60" r="54" class="progress-ring-fill" style="stroke-dashoffset: 135.7;"></circle>
+              </svg>
+              <div class="progress-ring-text">60%</div>
+            </div>
+            <h4 style="margin-top: 24px;">Dispute Reduction</h4>
+            <p style="color: var(--apple-gray); font-size: 17px;">Fewer contract conflicts</p>
+          </div>
+        </div>
+        
+        <div class="fragment" style="text-align: center; margin-top: 48px;">
+          <div class="badge badge-primary" style="font-size: 24px; padding: 16px 32px;">
+            ROI: 8x in first year
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <!-- Use Case: Media -->
+    <section>
+      <section style="background: linear-gradient(135deg, #f5f5f7 0%, #ffffff 100%);">
+        <h2>Demo: Media Fact-Checking</h2>
+        <p class="lead">Presidential debate analysis</p>
+      </section>
+
+      <section>
+        <h3>Real-time Fact Analysis</h3>
+        <div class="grid grid-2" style="margin-top: 48px; gap: 32px;">
+          <div class="apple-card fragment">
+            <div style="margin-bottom: 24px;">
+              <p style="color: var(--apple-gray); margin-bottom: 8px;">Statement:</p>
+              <p style="font-size: 21px; font-weight: 500;">"Crime is at an all-time high"</p>
+            </div>
+            <div class="fragment">
+              <span class="badge badge-danger">False</span>
+              <p style="margin-top: 16px; font-size: 17px;">FBI data shows 5.7% decrease YoY</p>
+            </div>
+          </div>
+          
+          <div class="apple-card fragment">
+            <div style="margin-bottom: 24px;">
+              <p style="color: var(--apple-gray); margin-bottom: 8px;">Statement:</p>
+              <p style="font-size: 21px; font-weight: 500;">"15 million jobs created"</p>
+            </div>
+            <div class="fragment">
+              <span class="badge badge-success">Mostly True</span>
+              <p style="margin-top: 16px; font-size: 17px;">BLS confirms 14.8 million</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="metric-card fragment" style="max-width: 600px; margin: 48px auto;">
+          <div class="metric gradient-text">2.3M</div>
+          <div class="metric-label">Fact-checks per debate</div>
+          <p style="margin-top: 16px; font-size: 17px; color: var(--apple-gray);">
+            Average response time: 12ms
+          </p>
+        </div>
+      </section>
+    </section>
+
+    <!-- Use Case: Legal -->
+    <section>
+      <section style="background: var(--apple-gray-light);">
+        <h2>Demo: Legal Defense</h2>
+        <p class="lead">CowdungRails™ offline capability</p>
+      </section>
+
+      <section>
+        <h3>Courtroom Protection</h3>
+        <div class="glass-panel" style="margin-top: 48px;">
+          <div style="margin-bottom: 32px;">
+            <p style="font-size: 21px; color: var(--apple-gray);">Statement:</p>
+            <p style="font-size: 28px; font-weight: 500;">"My client has never been sued"</p>
+          </div>
+          <div class="fragment">
+            <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
+              <span class="badge badge-danger">False Statement</span>
+              <div class="badge badge-secondary">Offline Mode</div>
+            </div>
+            <p style="font-size: 19px;">Local database shows 3 prior lawsuits on record.</p>
+          </div>
+        </div>
+        
+        <div class="grid grid-2" style="margin-top: 48px; gap: 24px;">
+          <div class="metric-card fragment">
+            <div class="icon-float" style="font-size: 48px; margin-bottom: 16px;">🔒</div>
+            <h4>100% Offline</h4>
+            <p style="color: var(--apple-gray);">Complete privacy</p>
+          </div>
+          <div class="metric-card fragment">
+            <div class="icon-float" style="font-size: 48px; margin-bottom: 16px;">📚</div>
+            <h4>10M+ Records</h4>
+            <p style="color: var(--apple-gray);">Pre-loaded precedents</p>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <!-- Technology -->
+    <section>
+      <section>
+        <h2>Powered by VAPI</h2>
+        <p class="lead">Enterprise-grade voice infrastructure</p>
+      </section>
+
+      <section>
+        <h3>Technical Architecture</h3>
+        <div style="max-width: 900px; margin: 48px auto;">
+          <div class="apple-card fragment">
+            <div style="display: flex; align-items: center; gap: 32px;">
+              <div class="feature-icon" style="background: var(--gradient-primary);">🎤</div>
+              <div style="flex: 1;">
+                <h4>VAPI Voice Engine</h4>
+                <p style="color: var(--apple-gray); margin-top: 8px;">WebRTC streaming • Voice activity detection • Sub-200ms latency</p>
+              </div>
+            </div>
+          </div>
+          
+          <div style="text-align: center; margin: 24px 0;" class="fragment">
+            <div style="width: 2px; height: 48px; background: var(--apple-gray-light); margin: 0 auto;"></div>
+          </div>
+          
+          <div class="apple-card fragment">
+            <div style="display: flex; align-items: center; gap: 32px;">
+              <div class="feature-icon" style="background: linear-gradient(135deg, #bf4fcf 0%, #8b3a9e 100%);">🧠</div>
+              <div style="flex: 1;">
+                <h4>AI Processing</h4>
+                <p style="color: var(--apple-gray); margin-top: 8px;">Multi-model verification • Confidence scoring • Real-time analysis</p>
+              </div>
+            </div>
+          </div>
+          
+          <div style="text-align: center; margin: 24px 0;" class="fragment">
+            <div style="width: 2px; height: 48px; background: var(--apple-gray-light); margin: 0 auto;"></div>
+          </div>
+          
+          <div class="apple-card fragment">
+            <div style="display: flex; align-items: center; gap: 32px;">
+              <div class="feature-icon" style="background: linear-gradient(135deg, #34c759 0%, #248a3d 100%);">🔔</div>
+              <div style="flex: 1;">
+                <h4>Instant Alerts</h4>
+                <p style="color: var(--apple-gray); margin-top: 8px;">Webhook integration • Push notifications • Dashboard updates</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h3>Why VAPI?</h3>
+        <div class="grid grid-2" style="margin-top: 48px; max-width: 800px; margin-left: auto; margin-right: auto;">
+          <div class="glass-panel">
+            <h4 style="color: var(--apple-blue);">Performance</h4>
+            <ul style="margin-top: 24px;">
+              <li>200ms latency vs 2-3s industry average</li>
+              <li>99.9% uptime SLA</li>
+              <li>Global edge network</li>
+            </ul>
+          </div>
+          <div class="glass-panel">
+            <h4 style="color: var(--apple-blue);">Features</h4>
+            <ul style="margin-top: 24px;">
+              <li>Built-in voice activity detection</li>
+              <li>Seamless webhook integration</li>
+              <li>Enterprise security standards</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <!-- Business Model -->
+    <section>
+      <h2>Revenue Model</h2>
+      <div class="grid grid-3" style="margin-top: 64px;">
+        <div class="apple-card fragment scale-in">
+          <div style="text-align: center;">
+            <div class="metric gradient-text">$5-50K</div>
+            <div class="metric-label">per month</div>
+            <h4 style="margin-top: 24px;">Enterprise</h4>
+            <p style="color: var(--apple-gray); font-size: 17px;">Procurement teams</p>
+          </div>
+        </div>
+        
+        <div class="apple-card fragment scale-in">
+          <div style="text-align: center;">
+            <div class="metric gradient-text">$2K</div>
+            <div class="metric-label">per month</div>
+            <h4 style="margin-top: 24px;">Legal</h4>
+            <p style="color: var(--apple-gray); font-size: 17px;">Law firms</p>
+          </div>
+        </div>
+        
+        <div class="apple-card fragment scale-in">
+          <div style="text-align: center;">
+            <div class="metric gradient-text">$0.10</div>
+            <div class="metric-label">per query</div>
+            <h4 style="margin-top: 24px;">API</h4>
+            <p style="color: var(--apple-gray); font-size: 17px;">Media platforms</p>
+          </div>
+        </div>
+      </div>
+      
+      <div style="text-align: center; margin-top: 64px;" class="fragment">
+        <p style="font-size: 28px; color: var(--apple-gray);">Projected Year 1</p>
+        <div class="metric gradient-text">$2.4M ARR</div>
+      </div>
+    </section>
+
+    <!-- Market Opportunity -->
+    <section>
+      <h2>Market Opportunity</h2>
+      <div class="glass-panel" style="margin-top: 48px;">
+        <div class="grid grid-2" style="gap: 48px;">
+          <div>
+            <h3 style="margin-bottom: 32px;">Target Markets</h3>
+            <div style="margin-bottom: 24px;">
+              <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                <span style="font-size: 21px;">Voice AI</span>
+                <span style="font-size: 28px; font-weight: 600; color: var(--apple-blue);">$31.82B</span>
+              </div>
+              <div style="height: 8px; background: var(--apple-gray-light); border-radius: 4px; margin-top: 8px;">
+                <div style="height: 100%; width: 80%; background: var(--gradient-primary); border-radius: 4px;"></div>
+              </div>
+            </div>
+            <div style="margin-bottom: 24px;">
+              <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                <span style="font-size: 21px;">Legal Tech</span>
+                <span style="font-size: 28px; font-weight: 600; color: var(--apple-blue);">$23.5B</span>
+              </div>
+              <div style="height: 8px; background: var(--apple-gray-light); border-radius: 4px; margin-top: 8px;">
+                <div style="height: 100%; width: 60%; background: var(--gradient-primary); border-radius: 4px;"></div>
+              </div>
+            </div>
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                <span style="font-size: 21px;">Procurement</span>
+                <span style="font-size: 28px; font-weight: 600; color: var(--apple-blue);">$9.8B</span>
+              </div>
+              <div style="height: 8px; background: var(--apple-gray-light); border-radius: 4px; margin-top: 8px;">
+                <div style="height: 100%; width: 40%; background: var(--gradient-primary); border-radius: 4px;"></div>
+              </div>
+            </div>
+          </div>
+          <div style="text-align: center; display: flex; align-items: center; justify-content: center;">
+            <div>
+              <p style="font-size: 21px; color: var(--apple-gray); margin-bottom: 16px;">Total Addressable Market</p>
+              <div class="metric gradient-text">$68B+</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Competitive Advantage -->
+    <section>
+      <h2>Competitive Advantage</h2>
+      <ul class="feature-list" style="max-width: 900px; margin: 48px auto;">
+        <li class="fragment">
+          <div class="feature-icon" style="font-size: 32px;">🥇</div>
+          <div class="feature-content">
+            <h4>First Voice-Native Solution</h4>
+            <p>Purpose-built for real-time voice verification</p>
+          </div>
+        </li>
+        <li class="fragment">
+          <div class="feature-icon" style="font-size: 32px;">⚡</div>
+          <div class="feature-content">
+            <h4>10x Faster Detection</h4>
+            <p>200ms vs 2-3 second industry standard</p>
+          </div>
+        </li>
+        <li class="fragment">
+          <div class="feature-icon" style="font-size: 32px;">🔒</div>
+          <div class="feature-content">
+            <h4>Offline Capability</h4>
+            <p>Only solution with full offline functionality</p>
+          </div>
+        </li>
+        <li class="fragment">
+          <div class="feature-icon" style="font-size: 32px;">🎯</div>
+          <div class="feature-content">
+            <h4>Industry-Specific Models</h4>
+            <p>Tailored for legal, finance, and media verticals</p>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Traction -->
+    <section>
+      <h2>Current Status</h2>
+      <div class="grid grid-4" style="margin-top: 64px;">
+        <div class="metric-card fragment scale-in">
+          <div class="icon-float" style="font-size: 64px;">✅</div>
+          <h4>MVP Complete</h4>
+          <p style="color: var(--apple-gray); font-size: 17px;">3 working demos</p>
+        </div>
+        <div class="metric-card fragment scale-in">
+          <div class="icon-float" style="font-size: 64px;">🔌</div>
+          <h4>VAPI Ready</h4>
+          <p style="color: var(--apple-gray); font-size: 17px;">Full integration</p>
+        </div>
+        <div class="metric-card fragment scale-in">
+          <div class="icon-float" style="font-size: 64px;">🚀</div>
+          <h4>Pilot Ready</h4>
+          <p style="color: var(--apple-gray); font-size: 17px;">Enterprise trials</p>
+        </div>
+        <div class="metric-card fragment scale-in">
+          <div class="icon-float" style="font-size: 64px;">📊</div>
+          <h4>94% Accuracy</h4>
+          <p style="color: var(--apple-gray); font-size: 17px;">Verified claims</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section data-background-color="#000000">
+      <div class="hero-mesh" style="opacity: 0.3;"></div>
+      <h1 style="color: white;">TruthGuard AI</h1>
+      <p style="color: white; opacity: 0.9; font-size: 32px; margin-top: 32px;">
+        Making truth verification as simple as conversation
+      </p>
+      <div style="margin-top: 64px;" class="fragment fade-in-up">
+        <a href="#" class="btn btn-primary" style="font-size: 21px; padding: 20px 40px;">
+          Schedule Demo
+        </a>
+      </div>
+      <p style="color: white; opacity: 0.6; margin-top: 48px;">
+        SOMA Voice AI Hackathon • August 9, 2025
+      </p>
+    </section>
+
+    <!-- Q&A -->
+    <section>
+      <h1>Questions</h1>
+      <p class="lead">Let's discuss how TruthGuard AI can transform your industry</p>
+      <div style="margin-top: 64px;">
+        <div class="badge badge-secondary" style="font-size: 19px; padding: 12px 24px; margin: 8px;">Live Demo</div>
+        <div class="badge badge-secondary" style="font-size: 19px; padding: 12px 24px; margin: 8px;">Technical Deep Dive</div>
+        <div class="badge badge-secondary" style="font-size: 19px; padding: 12px 24px; margin: 8px;">Partnership Opportunities</div>
+      </div>
+    </section>
+  </div>
+</div>

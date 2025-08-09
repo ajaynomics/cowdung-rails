@@ -45,14 +45,14 @@ class DetectorChannel < ApplicationCable::Channel
     remaining_chunks = AudioChunk.for_session(@session_id)
     return if remaining_chunks.empty?
 
-    # Process any final chunks
+    # Process any final chunks for a complete transcript
     last_sequence = remaining_chunks.maximum(:sequence)
     if last_sequence >= 0
       start_seq = [ 0, last_sequence - 29 ].max
       ProcessAudioJob.perform_later(@session_id, start_seq, last_sequence, "final")
     end
 
-    # Clean up chunks after a delay
-    AudioChunk.for_session(@session_id).destroy_all
+    # Clean up after a short delay to ensure final processing completes
+    CleanupAudioChunksJob.set(wait: 30.seconds).perform_later(@session_id)
   end
 end
