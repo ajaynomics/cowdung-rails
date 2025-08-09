@@ -56,6 +56,7 @@ export default class extends Controller {
       
       // Connect audio pipeline
       source.connect(this.scriptProcessor)
+      this.scriptProcessor.connect(this.audioContext.destination)
       
       // Capture PCM data
       this.scriptProcessor.onaudioprocess = (event) => {
@@ -69,6 +70,7 @@ export default class extends Controller {
         }
         
         this.pcmChunks.push(pcm16)
+        console.log(`Captured PCM chunk: ${pcm16.length} samples, total chunks: ${this.pcmChunks.length}`)
       }
       
       // Set up ActionCable subscription
@@ -76,6 +78,7 @@ export default class extends Controller {
       
       // Send PCM data every second
       this.sendInterval = setInterval(() => {
+        console.log(`Send interval fired - chunks: ${this.pcmChunks.length}, subscription: ${!!this.subscription}, muted: ${this.isMuted}`)
         if (this.pcmChunks.length > 0 && this.subscription && !this.isMuted) {
           // Combine PCM chunks
           const totalLength = this.pcmChunks.reduce((acc, chunk) => acc + chunk.length, 0)

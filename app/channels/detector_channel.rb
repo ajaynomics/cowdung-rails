@@ -10,8 +10,10 @@ class DetectorChannel < ApplicationCable::Channel
   end
 
   def receive_audio(data)
+    Rails.logger.info "Received audio data with keys: #{data.keys.join(', ')}"
     return Rails.logger.error "No audio data in chunk!" if data["audio_chunk"].blank?
 
+    Rails.logger.info "Creating audio chunk for session #{@session_id}, data size: #{data['audio_chunk'].length}"
     # Save the audio chunk
     chunk = AudioChunk.create!(
       session_id: @session_id,
@@ -24,6 +26,7 @@ class DetectorChannel < ApplicationCable::Channel
     # Process every 10 seconds (10 chunks)
     if (chunk.sequence + 1) % 10 == 0
       start_seq = chunk.sequence - 9
+      Rails.logger.info "Triggering ProcessAudioJob for session #{@session_id}, sequences #{start_seq}-#{chunk.sequence}"
       ProcessAudioJob.perform_later(@session_id, start_seq, chunk.sequence)
     end
   end
