@@ -74,39 +74,31 @@ class DetectorChannelTest < ActionCable::Channel::TestCase
     assert_equal 44100, chunk.sample_rate
   end
 
-  test "enqueues job with sliding window every 3 chunks" do
+  test "enqueues jobs with new simple pattern" do
     subscribe session_id: "test-job-session"
 
-    # First 2 chunks shouldn't trigger job
-    2.times do |i|
-      perform :receive_audio, audio_chunk: "chunk#{i}"
-    end
-
+    # First chunk (sequence 0) shouldn't trigger anything
+    perform :receive_audio, audio_chunk: "chunk0"
     assert_no_enqueued_jobs
 
-    # 3rd chunk (sequence 2) should trigger first job
-    assert_enqueued_with(job: ProcessAudioJob, args: [ "test-job-session", 0, 2, "quick" ]) do
-      perform :receive_audio, audio_chunk: "chunk2"
+    # Second chunk (sequence 1) triggers transcription
+    assert_enqueued_with(job: ProcessAudioJob, args: [ "test-job-session", 0, 1, "rolling" ]) do
+      perform :receive_audio, audio_chunk: "chunk1"
     end
 
-    # 4th chunk (sequence 3) shouldn't trigger job
-    perform :receive_audio, audio_chunk: "chunk3"
+    # Third chunk (sequence 2) triggers BS detection
+    perform :receive_audio, audio_chunk: "chunk2"
     assert_enqueued_jobs 1, only: ProcessAudioJob
-
-    # 5th chunk (sequence 4) should trigger second ProcessAudioJob AND DetectBullshitJob
-    perform :receive_audio, audio_chunk: "chunk4"
-    assert_enqueued_jobs 2, only: ProcessAudioJob
     assert_enqueued_jobs 1, only: DetectBullshitJob
-    assert_enqueued_with(job: ProcessAudioJob, args: [ "test-job-session", 2, 4, "quick" ])
-    assert_enqueued_with(job: DetectBullshitJob, args: [ "test-job-session" ])
 
-    # Verify sliding window pattern continues
-    perform :receive_audio, audio_chunk: "chunk5"
-    assert_enqueued_jobs 2, only: ProcessAudioJob
-
-    # 7th chunk (sequence 6) triggers third job
-    assert_enqueued_with(job: ProcessAudioJob, args: [ "test-job-session", 4, 6, "quick" ]) do
-      perform :receive_audio, audio_chunk: "chunk6"
+    # Fourth chunk (sequence 3) triggers another transcription
+    assert_enqueued_with(job: ProcessAudioJob, args: [ "test-job-session", 0, 3, "rolling" ]) do
+      perform :receive_audio, audio_chunk: "chunk3"
     end
+
+    # Verify BS detection pattern (every 3 chunks)
+    perform :receive_audio, audio_chunk: "chunk4"
+    perform :receive_audio, audio_chunk: "chunk5"
+    assert_enqueued_jobs 2, only: DetectBullshitJob  # One from chunk 2, one from chunk 5
   end
 end
