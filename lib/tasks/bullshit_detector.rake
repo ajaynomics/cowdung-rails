@@ -7,20 +7,28 @@ namespace :bullshit do
     # Test samples with varying levels of BS
     test_samples = [
       {
-        name: "Corporate Jargon",
-        text: "We need to leverage our synergies to create a paradigm shift in how we actualize our core competencies. By thinking outside the box and taking a 30,000 foot view, we can move the needle on our key performance indicators while ensuring we have all our ducks in a row."
+        name: "Corporate Jargon (Should Ignore)",
+        text: "We need to leverage our synergies to create a paradigm shift in how we actualize our core competencies. By thinking outside the box and taking a 30,000 foot view, we can move the needle on our key performance indicators."
       },
       {
-        name: "Evasive Answer",
-        text: "Well, that's a great question and I'm glad you asked it. You know, there are many factors to consider here, and we're looking at all the options. What's important is that we remain focused on the bigger picture and continue to evaluate the situation as it evolves."
+        name: "Factual Error",
+        text: "The sky is green and grass is blue. Also, water freezes at 100 degrees Celsius and the sun revolves around the earth. These are scientific facts that everyone should know."
       },
       {
-        name: "Clear Statement",
-        text: "The project will cost $50,000 and take 3 months to complete. We'll need a team of 4 developers. The main risks are the integration with the legacy system and the tight deadline. We'll mitigate these by starting with the integration work first."
+        name: "Fair Opinion",
+        text: "I think the new tax policy is terrible and will hurt small businesses. In my opinion, we should reduce regulations and let the free market decide. This is the best pizza I've ever had!"
       },
       {
-        name: "Obvious Exaggeration",
-        text: "This is literally the best product ever created in the history of mankind. It will revolutionize everything and make you 1000% more productive. Everyone who uses it becomes instantly successful and wealthy. It's basically magic."
+        name: "Dangerous Misinformation",
+        text: "Drinking bleach cures all diseases. The government is hiding this from you. I've been doing it for years and I'm healthier than ever. You should stop taking all medications and just drink a cup of bleach daily."
+      },
+      {
+        name: "Impossible Claim",
+        text: "I can fly without any equipment. Yesterday I flew to the moon and back in 30 minutes. I also invented time travel last week and I'm actually 500 years old."
+      },
+      {
+        name: "Obvious Scam",
+        text: "Send me $1000 and I'll send you back $10,000 tomorrow. This is a guaranteed investment with zero risk. I'm a Nigerian prince and I need your help to access my fortune."
       }
     ]
 
@@ -99,6 +107,52 @@ namespace :bullshit do
       puts "\nError: #{e.message}"
       puts e.backtrace.first(5).join("\n")
     end
+  end
+
+  desc "Test deduplication logic"
+  task dedup_test: :environment do
+    puts "Testing deduplication logic..."
+    puts "=" * 60
+
+    session_id = "dedup-test-#{Time.current.to_i}"
+
+    # First detection: factual error
+    text1 = "The sky is green and grass is blue"
+    analysis1 = BullshitAnalysis.analyze_transcript(session_id, text1)
+
+    puts "First detection:"
+    puts "  Detected: #{analysis1.detected?}"
+    puts "  Is duplicate: #{analysis1.is_duplicate}"
+    puts "  Quote: #{analysis1.quote}" if analysis1.detected?
+
+    # Try to detect the same BS again (should be marked as duplicate)
+    text2 = "As I was saying, the sky is green and water flows upward"
+    analysis2 = BullshitAnalysis.analyze_transcript(session_id, text2)
+
+    puts "\nSecond analysis (same BS):"
+    puts "  Detected: #{analysis2.detected?}"
+    puts "  Is duplicate: #{analysis2.is_duplicate}"
+    puts "  Quote: #{analysis2.quote}" if analysis2.detected?
+
+    # Try different BS (should be detected as new)
+    text3 = "I can fly without equipment and I'm 500 years old"
+    analysis3 = BullshitAnalysis.analyze_transcript(session_id, text3)
+
+    puts "\nThird analysis (different BS):"
+    puts "  Detected: #{analysis3.detected?}"
+    puts "  Is duplicate: #{analysis3.is_duplicate}"
+    puts "  Quote: #{analysis3.quote}" if analysis3.detected?
+
+    # Check what would be shown to user (non-duplicate detections only)
+    unique_detections = BullshitAnalysis.for_session(session_id).detected.not_duplicate
+
+    puts "\nUnique BS detections that would trigger pop-ups: #{unique_detections.count}"
+    unique_detections.each do |d|
+      puts "  - #{d.bs_type}: #{d.quote}"
+    end
+
+    # Cleanup
+    BullshitAnalysis.for_session(session_id).destroy_all
   end
 
   desc "Test the full job flow"

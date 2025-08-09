@@ -91,16 +91,18 @@ class DetectorChannelTest < ActionCable::Channel::TestCase
 
     # 4th chunk (sequence 3) shouldn't trigger job
     perform :receive_audio, audio_chunk: "chunk3"
-    assert_enqueued_jobs 1  # Still just one job
+    assert_enqueued_jobs 1, only: ProcessAudioJob
 
-    # 5th chunk (sequence 4) should trigger second job with overlap
-    assert_enqueued_with(job: ProcessAudioJob, args: [ "test-job-session", 2, 4, "quick" ]) do
-      perform :receive_audio, audio_chunk: "chunk4"
-    end
+    # 5th chunk (sequence 4) should trigger second ProcessAudioJob AND DetectBullshitJob
+    perform :receive_audio, audio_chunk: "chunk4"
+    assert_enqueued_jobs 2, only: ProcessAudioJob
+    assert_enqueued_jobs 1, only: DetectBullshitJob
+    assert_enqueued_with(job: ProcessAudioJob, args: [ "test-job-session", 2, 4, "quick" ])
+    assert_enqueued_with(job: DetectBullshitJob, args: [ "test-job-session" ])
 
     # Verify sliding window pattern continues
     perform :receive_audio, audio_chunk: "chunk5"
-    assert_enqueued_jobs 2  # Still just two jobs
+    assert_enqueued_jobs 2, only: ProcessAudioJob
 
     # 7th chunk (sequence 6) triggers third job
     assert_enqueued_with(job: ProcessAudioJob, args: [ "test-job-session", 4, 6, "quick" ]) do
