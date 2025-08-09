@@ -9,11 +9,15 @@
         <span class="badge badge-primary">Enterprise</span>
         <span class="badge badge-primary">VAPI Powered</span>
       </div>
-      <!-- Simple inline-block approach for auto-animate -->
-      <div style="margin-top: 40px;">
-        <div data-id="box1" style="display: inline-block; background: #999; width: 50px; height: 50px; border-radius: 5px; margin: 0 10px;"></div>
-        <div data-id="box2" style="display: inline-block; background: #999; width: 50px; height: 50px; border-radius: 5px; margin: 0 10px;"></div>
-        <div data-id="box3" style="display: inline-block; background: #999; width: 50px; height: 50px; border-radius: 5px; margin: 0 10px;"></div>
+      <!-- Waveform visualization -->
+      <div class="r-hstack justify-center" style="margin-top: 40px;">
+        <div data-id="wave1" style="background: #0071e3; width: 4px; height: 40px; margin: 2px; border-radius: 2px; opacity: 0.7;"></div>
+        <div data-id="wave2" style="background: #0071e3; width: 4px; height: 60px; margin: 2px; border-radius: 2px; opacity: 0.8;"></div>
+        <div data-id="wave3" style="background: #0071e3; width: 4px; height: 80px; margin: 2px; border-radius: 2px; opacity: 0.9;"></div>
+        <div data-id="wave4" style="background: #0071e3; width: 4px; height: 100px; margin: 2px; border-radius: 2px; opacity: 1;"></div>
+        <div data-id="wave5" style="background: #0071e3; width: 4px; height: 80px; margin: 2px; border-radius: 2px; opacity: 0.9;"></div>
+        <div data-id="wave6" style="background: #0071e3; width: 4px; height: 60px; margin: 2px; border-radius: 2px; opacity: 0.8;"></div>
+        <div data-id="wave7" style="background: #0071e3; width: 4px; height: 40px; margin: 2px; border-radius: 2px; opacity: 0.7;"></div>
       </div>
     </section>
 
@@ -22,10 +26,17 @@
       <h1 class="metric gradient-text" style="font-size: 48px; opacity: 0.3;">Soundcheck</h1>
       <h2>The $78 Billion Problem</h2>
       <p class="lead">Misinformation costs businesses billions annually</p>
-      <div style="margin-top: 20px;">
-        <div data-id="box1" data-auto-animate-delay="0" style="display: inline-block; background: #ff3b30; width: 150px; height: 100px; margin: 0 10px;"></div>
-        <div data-id="box2" data-auto-animate-delay="0.1" style="display: inline-block; background: #ff3b30; width: 150px; height: 100px; margin: 0 10px;"></div>
-        <div data-id="box3" data-auto-animate-delay="0.2" style="display: inline-block; background: #ff3b30; width: 150px; height: 100px; margin: 0 10px;"></div>
+      <!-- Transform waveform to warning indicators -->
+      <div class="r-hstack justify-center" style="margin-top: 20px;">
+        <div data-id="wave1" style="background: #ff3b30; width: 8px; height: 120px; margin: 4px; border-radius: 4px; opacity: 0.7; transform: scaleX(2);"></div>
+        <div data-id="wave2" style="background: #ff3b30; width: 8px; height: 140px; margin: 4px; border-radius: 4px; opacity: 0.8; transform: scaleX(2);"></div>
+        <div data-id="wave3" style="background: #ff3b30; width: 8px; height: 160px; margin: 4px; border-radius: 4px; opacity: 0.9; transform: scaleX(2);"></div>
+        <div data-id="wave4" style="background: #ff3b30; width: 8px; height: 180px; margin: 4px; border-radius: 4px; opacity: 1; transform: scaleX(2);"></div>
+        <div data-id="wave5" style="background: #ff3b30; width: 8px; height: 160px; margin: 4px; border-radius: 4px; opacity: 0.9; transform: scaleX(2);"></div>
+        <div data-id="wave6" style="background: #ff3b30; width: 8px; height: 140px; margin: 4px; border-radius: 4px; opacity: 0.8; transform: scaleX(2);"></div>
+        <div data-id="wave7" style="background: #ff3b30; width: 8px; height: 120px; margin: 4px; border-radius: 4px; opacity: 0.7; transform: scaleX(2);"></div>
+        <!-- Warning overlay -->
+        <div data-id="warning" style="position: absolute; background: #ff3b30; width: 200px; height: 60px; border-radius: 30px; opacity: 0; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">⚠️ DETECTED</div>
       </div>
       <div class="grid grid-4 mt-6">
         <div class="metric-card fragment scale-in" data-id="cost-metric">
@@ -52,10 +63,17 @@
       <section data-auto-animate data-auto-animate-easing="cubic-bezier(0.770, 0.000, 0.175, 1.000)">
         <h2>Introducing Soundcheck</h2>
         <p class="lead">Voice-first truth verification platform</p>
+        <!-- Waveform transforms to solution layers -->
         <div class="r-stack">
-          <div data-id="box1" style="background: #0071e3; width: 300px; height: 300px; border-radius: 150px; opacity: 0.3;"></div>
-          <div data-id="box2" style="background: #bf4fcf; width: 200px; height: 200px; border-radius: 100px; opacity: 0.3;"></div>
-          <div data-id="box3" style="background: #34c759; width: 100px; height: 100px; border-radius: 50px; opacity: 0.3;"></div>
+          <div data-id="wave1" style="background: #0071e3; width: 300px; height: 300px; border-radius: 150px; opacity: 0.3;"></div>
+          <div data-id="wave2" style="background: #bf4fcf; width: 250px; height: 250px; border-radius: 125px; opacity: 0.3;"></div>
+          <div data-id="wave3" style="background: #34c759; width: 200px; height: 200px; border-radius: 100px; opacity: 0.3;"></div>
+          <div data-id="wave4" style="background: #ff9500; width: 150px; height: 150px; border-radius: 75px; opacity: 0.3;"></div>
+          <div data-id="wave5" style="background: #af52de; width: 100px; height: 100px; border-radius: 50px; opacity: 0.3;"></div>
+          <div data-id="wave6" style="background: #00c7be; width: 50px; height: 50px; border-radius: 25px; opacity: 0.4;"></div>
+          <div data-id="wave7" style="background: white; width: 25px; height: 25px; border-radius: 12.5px; opacity: 0.8;"></div>
+          <!-- Solution text overlay -->
+          <div data-id="warning" style="background: transparent; color: white; font-size: 24px; font-weight: bold; opacity: 1;">✓</div>
         </div>
         <div class="grid grid-3 mt-5" data-id="solution-cards">
           <div class="metric-card fragment fade-in-up">
@@ -389,12 +407,26 @@
     </section>
 
     <!-- Market Opportunity -->
-    <section data-auto-animate data-auto-animate-easing="cubic-bezier(0.770, 0.000, 0.175, 1.000)">
+    <section>
+      <section data-auto-animate data-auto-animate-easing="cubic-bezier(0.770, 0.000, 0.175, 1.000)">
+        <h2>Market Opportunity</h2>
+        <p class="lead">$68 billion addressable market</p>
+        <!-- Initial market circles -->
+        <div class="r-stack">
+          <div data-id="market1" style="background: linear-gradient(135deg, #00c7be 0%, #0071e3 100%); width: 300px; height: 300px; border-radius: 150px; opacity: 0.2;"></div>
+          <div data-id="market2" style="background: linear-gradient(135deg, #0071e3 0%, #bf4fcf 100%); width: 200px; height: 200px; border-radius: 100px; opacity: 0.3;"></div>
+          <div data-id="market3" style="background: linear-gradient(135deg, #bf4fcf 0%, #ff9500 100%); width: 100px; height: 100px; border-radius: 50px; opacity: 0.4;"></div>
+          <div style="color: white; font-size: 48px; font-weight: bold;">$68B</div>
+        </div>
+      </section>
+
+      <section data-auto-animate data-auto-animate-easing="cubic-bezier(0.770, 0.000, 0.175, 1.000)">
       <h2>Market Opportunity</h2>
+      <!-- Transform circles to market segments -->
       <div class="r-hstack justify-center">
-        <div data-id="box1" data-auto-animate-delay="0" style="background: #00c7be; width: 80px; height: 80px; margin: 10px; border-radius: 40px;"></div>
-        <div data-id="box2" data-auto-animate-delay="0.1" style="background: #00c7be; width: 120px; height: 120px; margin: 10px; border-radius: 60px;"></div>
-        <div data-id="box3" data-auto-animate-delay="0.2" style="background: #00c7be; width: 160px; height: 160px; margin: 10px; border-radius: 80px;"></div>
+        <div data-id="market1" data-auto-animate-delay="0" style="background: linear-gradient(135deg, #00c7be 0%, #0071e3 100%); width: 80px; height: 80px; margin: 10px; border-radius: 40px; opacity: 0.8;"></div>
+        <div data-id="market2" data-auto-animate-delay="0.1" style="background: linear-gradient(135deg, #0071e3 0%, #bf4fcf 100%); width: 120px; height: 120px; margin: 10px; border-radius: 60px; opacity: 0.8;"></div>
+        <div data-id="market3" data-auto-animate-delay="0.2" style="background: linear-gradient(135deg, #bf4fcf 0%, #ff9500 100%); width: 160px; height: 160px; margin: 10px; border-radius: 80px; opacity: 0.8;"></div>
       </div>
       <div class="metric-card mt-5">
         <div class="grid grid-2 gap-5">
@@ -437,39 +469,42 @@
         </div>
       </div>
     </section>
+    </section>
 
     <!-- Competitive Advantage -->
     <section data-auto-animate data-auto-animate-easing="cubic-bezier(0.770, 0.000, 0.175, 1.000)">
       <h2>Competitive Advantage</h2>
+      <!-- Pills transform into feature icons -->
       <div class="r-hstack justify-center" style="position: absolute; bottom: 10%; width: 100%;">
-        <div data-id="box1" style="background: linear-gradient(45deg, #ff3b30 0%, #ff9500 100%); width: 100px; height: 60px; margin: 5px; border-radius: 30px;"></div>
-        <div data-id="box2" style="background: linear-gradient(45deg, #ffcc00 0%, #34c759 100%); width: 100px; height: 60px; margin: 5px; border-radius: 30px;"></div>
-        <div data-id="box3" style="background: linear-gradient(45deg, #5856d6 0%, #bf4fcf 100%); width: 100px; height: 60px; margin: 5px; border-radius: 30px;"></div>
+        <div data-id="adv1" style="background: linear-gradient(45deg, #ff3b30 0%, #ff9500 100%); width: 100px; height: 60px; margin: 5px; border-radius: 30px;"></div>
+        <div data-id="adv2" style="background: linear-gradient(45deg, #ffcc00 0%, #34c759 100%); width: 100px; height: 60px; margin: 5px; border-radius: 30px;"></div>
+        <div data-id="adv3" style="background: linear-gradient(45deg, #5856d6 0%, #bf4fcf 100%); width: 100px; height: 60px; margin: 5px; border-radius: 30px;"></div>
+        <div data-id="adv4" style="background: linear-gradient(45deg, #00c7be 0%, #0071e3 100%); width: 100px; height: 60px; margin: 5px; border-radius: 30px;"></div>
       </div>
       <ul class="feature-list" style="max-width: 900px; margin: 48px auto;">
         <li class="fragment">
-          <div class="feature-icon" style="font-size: 32px;">🥇</div>
+          <div data-id="adv1" style="background: linear-gradient(45deg, #ff3b30 0%, #ff9500 100%); width: 64px; height: 64px; margin: 0; border-radius: 32px; display: flex; align-items: center; justify-content: center; font-size: 32px; flex-shrink: 0;">🥇</div>
           <div class="feature-content">
             <h4>First Voice-Native Solution</h4>
             <p>Purpose-built for real-time voice verification</p>
           </div>
         </li>
         <li class="fragment">
-          <div class="feature-icon" style="font-size: 32px;">⚡</div>
+          <div data-id="adv2" style="background: linear-gradient(45deg, #ffcc00 0%, #34c759 100%); width: 64px; height: 64px; margin: 0; border-radius: 32px; display: flex; align-items: center; justify-content: center; font-size: 32px; flex-shrink: 0;">⚡</div>
           <div class="feature-content">
             <h4>10x Faster Detection</h4>
             <p>200ms vs 2-3 second industry standard</p>
           </div>
         </li>
         <li class="fragment">
-          <div class="feature-icon" style="font-size: 32px;">🔒</div>
+          <div data-id="adv3" style="background: linear-gradient(45deg, #5856d6 0%, #bf4fcf 100%); width: 64px; height: 64px; margin: 0; border-radius: 32px; display: flex; align-items: center; justify-content: center; font-size: 32px; flex-shrink: 0;">🔒</div>
           <div class="feature-content">
             <h4>Offline Capability</h4>
             <p>Only solution with full offline functionality</p>
           </div>
         </li>
         <li class="fragment">
-          <div class="feature-icon" style="font-size: 32px;">🎯</div>
+          <div data-id="adv4" style="background: linear-gradient(45deg, #00c7be 0%, #0071e3 100%); width: 64px; height: 64px; margin: 0; border-radius: 32px; display: flex; align-items: center; justify-content: center; font-size: 32px; flex-shrink: 0;">🎯</div>
           <div class="feature-content">
             <h4>Industry-Specific Models</h4>
             <p>Tailored for legal, finance, and media verticals</p>
@@ -481,29 +516,31 @@
     <!-- Traction -->
     <section data-auto-animate data-auto-animate-easing="cubic-bezier(0.770, 0.000, 0.175, 1.000)">
       <h2>Current Status</h2>
+      <!-- Progress indicators that pulse and transform -->
       <div class="r-hstack justify-center">
-        <div data-id="box1" style="background: #34c759; width: 60px; height: 60px; margin: 10px; border-radius: 30px; line-height: 60px; color: white; font-size: 30px;">✓</div>
-        <div data-id="box2" style="background: #34c759; width: 60px; height: 60px; margin: 10px; border-radius: 30px; line-height: 60px; color: white; font-size: 30px;">✓</div>
-        <div data-id="box3" style="background: #34c759; width: 60px; height: 60px; margin: 10px; border-radius: 30px; line-height: 60px; color: white; font-size: 30px;">✓</div>
+        <div data-id="status1" style="background: #34c759; width: 60px; height: 60px; margin: 10px; border-radius: 30px; display: flex; align-items: center; justify-content: center; color: white; font-size: 30px; box-shadow: 0 0 20px rgba(52, 199, 89, 0.5);">✓</div>
+        <div data-id="status2" style="background: #34c759; width: 60px; height: 60px; margin: 10px; border-radius: 30px; display: flex; align-items: center; justify-content: center; color: white; font-size: 30px; box-shadow: 0 0 20px rgba(52, 199, 89, 0.5);">✓</div>
+        <div data-id="status3" style="background: #34c759; width: 60px; height: 60px; margin: 10px; border-radius: 30px; display: flex; align-items: center; justify-content: center; color: white; font-size: 30px; box-shadow: 0 0 20px rgba(52, 199, 89, 0.5);">✓</div>
+        <div data-id="status4" style="background: #34c759; width: 60px; height: 60px; margin: 10px; border-radius: 30px; display: flex; align-items: center; justify-content: center; color: white; font-size: 30px; box-shadow: 0 0 20px rgba(52, 199, 89, 0.5);">✓</div>
       </div>
       <div class="grid grid-4 mt-6">
         <div class="metric-card fragment scale-in" >
-          <div class="icon-float" style="font-size: 64px;" >✅</div>
+          <div data-id="status1" style="background: #34c759; width: 80px; height: 80px; margin: 0 auto 16px; border-radius: 40px; display: flex; align-items: center; justify-content: center; font-size: 48px;">✅</div>
           <h4>MVP Complete</h4>
           <p style="color: var(--apple-gray); font-size: 17px;">3 working demos</p>
         </div>
         <div class="metric-card fragment scale-in">
-          <div class="icon-float" style="font-size: 64px;">🔌</div>
+          <div data-id="status2" style="background: #0071e3; width: 80px; height: 80px; margin: 0 auto 16px; border-radius: 40px; display: flex; align-items: center; justify-content: center; font-size: 48px;">🔌</div>
           <h4>VAPI Ready</h4>
           <p style="color: var(--apple-gray); font-size: 17px;">Full integration</p>
         </div>
         <div class="metric-card fragment scale-in">
-          <div class="icon-float" style="font-size: 64px;">🚀</div>
+          <div data-id="status3" style="background: #ff9500; width: 80px; height: 80px; margin: 0 auto 16px; border-radius: 40px; display: flex; align-items: center; justify-content: center; font-size: 48px;">🚀</div>
           <h4>Pilot Ready</h4>
           <p style="color: var(--apple-gray); font-size: 17px;">Enterprise trials</p>
         </div>
         <div class="metric-card fragment scale-in">
-          <div class="icon-float" style="font-size: 64px;">📊</div>
+          <div data-id="status4" style="background: #bf4fcf; width: 80px; height: 80px; margin: 0 auto 16px; border-radius: 40px; display: flex; align-items: center; justify-content: center; font-size: 48px;">📊</div>
           <h4>94% Accuracy</h4>
           <p style="color: var(--apple-gray); font-size: 17px;">Verified claims</p>
         </div>
@@ -546,10 +583,15 @@
     <section data-auto-animate data-auto-animate-easing="cubic-bezier(0.770, 0.000, 0.175, 1.000)">
       <h1>Questions</h1>
       <p class="lead">Let's discuss how Soundcheck can transform your industry</p>
+      <!-- Animated sound wave bars -->
       <div class="r-hstack justify-center" style="position: absolute; bottom: 50px; width: 100%;">
-        <div data-id="box1" style="background: #0071e3; width: 60px; height: 60px; margin: 10px; border-radius: 8px;"></div>
-        <div data-id="box2" style="background: #bf4fcf; width: 60px; height: 60px; margin: 10px; border-radius: 8px;"></div>
-        <div data-id="box3" style="background: #34c759; width: 60px; height: 60px; margin: 10px; border-radius: 8px;"></div>
+        <div data-id="qa1" style="background: #0071e3; width: 8px; height: 30px; margin: 3px; border-radius: 4px; transition: height 0.3s ease;"></div>
+        <div data-id="qa2" style="background: #0071e3; width: 8px; height: 50px; margin: 3px; border-radius: 4px; transition: height 0.3s ease;"></div>
+        <div data-id="qa3" style="background: #bf4fcf; width: 8px; height: 70px; margin: 3px; border-radius: 4px; transition: height 0.3s ease;"></div>
+        <div data-id="qa4" style="background: #bf4fcf; width: 8px; height: 90px; margin: 3px; border-radius: 4px; transition: height 0.3s ease;"></div>
+        <div data-id="qa5" style="background: #34c759; width: 8px; height: 70px; margin: 3px; border-radius: 4px; transition: height 0.3s ease;"></div>
+        <div data-id="qa6" style="background: #34c759; width: 8px; height: 50px; margin: 3px; border-radius: 4px; transition: height 0.3s ease;"></div>
+        <div data-id="qa7" style="background: #ff9500; width: 8px; height: 30px; margin: 3px; border-radius: 4px; transition: height 0.3s ease;"></div>
       </div>
       <div class="mt-6">
         <div class="badge badge-outline">Live Demo</div>
