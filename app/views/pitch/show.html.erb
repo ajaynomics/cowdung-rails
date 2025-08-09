@@ -6,10 +6,10 @@
 <div class="reveal" data-controller="presentation">
   <div class="slides">
     <!-- Title Slide -->
-    <section>
+    <section data-auto-animate>
       <h1 class="metric gradient-text">TruthGuard AI</h1>
       <p class="lead">Real-time voice verification for high-stakes conversations</p>
-      <div class="fragment fade-in-up" style="margin-top: 48px;">
+      <div class="fragment fade-in-up" class="mt-5">
         <span class="badge badge-primary">Voice AI</span>
         <span class="badge badge-primary">Enterprise</span>
         <span class="badge badge-primary">VAPI Powered</span>
@@ -17,10 +17,10 @@
     </section>
 
     <!-- Problem -->
-    <section>
+    <section data-auto-animate>
       <h2>The $78 Billion Problem</h2>
       <p class="lead">Misinformation costs businesses billions annually</p>
-      <div class="grid grid-4" style="margin-top: 64px;">
+      <div class="grid grid-4" class="mt-6">
         <div class="metric-card fragment scale-in">
           <div class="metric gradient-text">$78B</div>
           <div class="metric-label">Annual cost</div>
@@ -42,33 +42,31 @@
 
     <!-- Solution Overview -->
     <section>
-      <section>
+      <section data-auto-animate>
         <h2>Introducing TruthGuard AI</h2>
         <p class="lead">Voice-first truth verification platform</p>
-        <div class="glass-panel" style="margin-top: 48px;">
-          <div class="grid grid-3">
-            <div class="fragment fade-in-up">
-              <div class="feature-icon">🎯</div>
-              <h4>Finance</h4>
-              <p style="color: var(--apple-gray);">Vendor negotiations</p>
-            </div>
-            <div class="fragment fade-in-up">
-              <div class="feature-icon">⚖️</div>
-              <h4>Legal</h4>
-              <p style="color: var(--apple-gray);">Courtroom monitoring</p>
-            </div>
-            <div class="fragment fade-in-up">
-              <div class="feature-icon">📺</div>
-              <h4>Media</h4>
-              <p style="color: var(--apple-gray);">Real-time fact-checking</p>
-            </div>
+        <div class="grid grid-3" class="mt-5">
+          <div class="metric-card fragment fade-in-up">
+            <div class="feature-icon">🎯</div>
+            <h4>Finance</h4>
+            <p class="text-secondary">Vendor negotiations</p>
+          </div>
+          <div class="metric-card fragment fade-in-up">
+            <div class="feature-icon">⚖️</div>
+            <h4>Legal</h4>
+            <p class="text-secondary">Courtroom monitoring</p>
+          </div>
+          <div class="metric-card fragment fade-in-up">
+            <div class="feature-icon">📺</div>
+            <h4>Media</h4>
+            <p class="text-secondary">Real-time fact-checking</p>
           </div>
         </div>
       </section>
 
-      <section>
+      <section data-auto-animate>
         <h3>How It Works</h3>
-        <ul class="feature-list" style="max-width: 800px; margin: 48px auto;">
+        <ul class="feature-list">
           <li>
             <div class="feature-icon">1</div>
             <div class="feature-content">
@@ -96,17 +94,17 @@
 
     <!-- Use Case: Vendor Negotiation -->
     <section>
-      <section data-background-color="#000000">
-        <h2 style="color: white;">Demo: Enterprise Procurement</h2>
-        <p style="color: white; opacity: 0.8;">Protecting your bottom line</p>
+      <section>
+        <h2>Demo: Enterprise Procurement</h2>
+        <p class="lead">Protecting your bottom line</p>
       </section>
 
-      <section>
+      <section data-auto-animate>
         <h3>Vendor Negotiation Analysis</h3>
-        <div class="apple-card" style="margin-top: 48px;">
-          <div style="margin-bottom: 32px;">
-            <p style="font-size: 21px; color: var(--apple-gray);">Claim detected:</p>
-            <p style="font-size: 28px; font-weight: 500;">"We guarantee 99.999% uptime"</p>
+        <div class="metric-card mt-5">
+          <div class="statement-block">
+            <p class="statement-label">Claim detected:</p>
+            <p class="statement-text">"We guarantee 99.999% uptime"</p>
           </div>
           <div class="fragment">
             <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
@@ -117,10 +115,10 @@
           </div>
         </div>
         
-        <div class="apple-card fragment" style="margin-top: 24px;">
-          <div style="margin-bottom: 32px;">
-            <p style="font-size: 21px; color: var(--apple-gray);">Claim detected:</p>
-            <p style="font-size: 28px; font-weight: 500;">"70% cost reduction guaranteed"</p>
+        <div class="metric-card fragment" style="margin-top: 24px;">
+          <div class="statement-block">
+            <p class="statement-label">Claim detected:</p>
+            <p class="statement-text">"70% cost reduction guaranteed"</p>
           </div>
           <div class="fragment">
             <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
@@ -132,10 +130,10 @@
         </div>
       </section>
 
-      <section>
+      <section data-auto-animate>
         <h3>Business Impact</h3>
-        <div class="grid grid-2" style="margin-top: 48px; max-width: 800px; margin-left: auto; margin-right: auto;">
-          <div class="glass-panel fragment">
+        <div class="grid grid-2 impact-grid">
+          <div class="metric-card fragment">
             <div class="progress-ring">
               <svg width="120" height="120">
                 <circle cx="60" cy="60" r="54" class="progress-ring-bg"></circle>
@@ -147,7 +145,7 @@
             <p style="color: var(--apple-gray); font-size: 17px;">Average procurement savings</p>
           </div>
           
-          <div class="glass-panel fragment">
+          <div class="metric-card fragment">
             <div class="progress-ring">
               <svg width="120" height="120">
                 <circle cx="60" cy="60" r="54" class="progress-ring-bg"></circle>
@@ -170,7 +168,7 @@
 
     <!-- Use Case: Media -->
     <section>
-      <section style="background: linear-gradient(135deg, #f5f5f7 0%, #ffffff 100%);">
+      <section>
         <h2>Demo: Media Fact-Checking</h2>
         <p class="lead">Presidential debate analysis</p>
       </section>
@@ -178,7 +176,7 @@
       <section>
         <h3>Real-time Fact Analysis</h3>
         <div class="grid grid-2" style="margin-top: 48px; gap: 32px;">
-          <div class="apple-card fragment">
+          <div class="metric-card fragment">
             <div style="margin-bottom: 24px;">
               <p style="color: var(--apple-gray); margin-bottom: 8px;">Statement:</p>
               <p style="font-size: 21px; font-weight: 500;">"Crime is at an all-time high"</p>
@@ -189,7 +187,7 @@
             </div>
           </div>
           
-          <div class="apple-card fragment">
+          <div class="metric-card fragment">
             <div style="margin-bottom: 24px;">
               <p style="color: var(--apple-gray); margin-bottom: 8px;">Statement:</p>
               <p style="font-size: 21px; font-weight: 500;">"15 million jobs created"</p>
@@ -201,10 +199,10 @@
           </div>
         </div>
         
-        <div class="metric-card fragment" style="max-width: 600px; margin: 48px auto;">
+        <div class="metric-card fragment metric-highlight">
           <div class="metric gradient-text">2.3M</div>
           <div class="metric-label">Fact-checks per debate</div>
-          <p style="margin-top: 16px; font-size: 17px; color: var(--apple-gray);">
+          <p class="mt-2 text-caption">
             Average response time: 12ms
           </p>
         </div>
@@ -213,14 +211,14 @@
 
     <!-- Use Case: Legal -->
     <section>
-      <section style="background: var(--apple-gray-light);">
+      <section>
         <h2>Demo: Legal Defense</h2>
         <p class="lead">CowdungRails™ offline capability</p>
       </section>
 
       <section>
         <h3>Courtroom Protection</h3>
-        <div class="glass-panel" style="margin-top: 48px;">
+        <div class="metric-card mt-5">
           <div style="margin-bottom: 32px;">
             <p style="font-size: 21px; color: var(--apple-gray);">Statement:</p>
             <p style="font-size: 28px; font-weight: 500;">"My client has never been sued"</p>
@@ -234,14 +232,14 @@
           </div>
         </div>
         
-        <div class="grid grid-2" style="margin-top: 48px; gap: 24px;">
+        <div class="grid grid-2 icon-grid">
           <div class="metric-card fragment">
-            <div class="icon-float" style="font-size: 48px; margin-bottom: 16px;">🔒</div>
+            <div class="icon-float icon-large">🔒</div>
             <h4>100% Offline</h4>
             <p style="color: var(--apple-gray);">Complete privacy</p>
           </div>
           <div class="metric-card fragment">
-            <div class="icon-float" style="font-size: 48px; margin-bottom: 16px;">📚</div>
+            <div class="icon-float icon-large">📚</div>
             <h4>10M+ Records</h4>
             <p style="color: var(--apple-gray);">Pre-loaded precedents</p>
           </div>
@@ -259,7 +257,7 @@
       <section>
         <h3>Technical Architecture</h3>
         <div style="max-width: 900px; margin: 48px auto;">
-          <div class="apple-card fragment">
+          <div class="metric-card fragment">
             <div style="display: flex; align-items: center; gap: 32px;">
               <div class="feature-icon" style="background: var(--gradient-primary);">🎤</div>
               <div style="flex: 1;">
@@ -269,11 +267,11 @@
             </div>
           </div>
           
-          <div style="text-align: center; margin: 24px 0;" class="fragment">
-            <div style="width: 2px; height: 48px; background: var(--apple-gray-light); margin: 0 auto;"></div>
+          <div class="connector fragment">
+            <div class="connector-line"></div>
           </div>
           
-          <div class="apple-card fragment">
+          <div class="metric-card fragment">
             <div style="display: flex; align-items: center; gap: 32px;">
               <div class="feature-icon" style="background: linear-gradient(135deg, #bf4fcf 0%, #8b3a9e 100%);">🧠</div>
               <div style="flex: 1;">
@@ -283,11 +281,11 @@
             </div>
           </div>
           
-          <div style="text-align: center; margin: 24px 0;" class="fragment">
-            <div style="width: 2px; height: 48px; background: var(--apple-gray-light); margin: 0 auto;"></div>
+          <div class="connector fragment">
+            <div class="connector-line"></div>
           </div>
           
-          <div class="apple-card fragment">
+          <div class="metric-card fragment">
             <div style="display: flex; align-items: center; gap: 32px;">
               <div class="feature-icon" style="background: linear-gradient(135deg, #34c759 0%, #248a3d 100%);">🔔</div>
               <div style="flex: 1;">
@@ -302,7 +300,7 @@
       <section>
         <h3>Why VAPI?</h3>
         <div class="grid grid-2" style="margin-top: 48px; max-width: 800px; margin-left: auto; margin-right: auto;">
-          <div class="glass-panel">
+          <div class="metric-card">
             <h4 style="color: var(--apple-blue);">Performance</h4>
             <ul style="margin-top: 24px;">
               <li>200ms latency vs 2-3s industry average</li>
@@ -310,7 +308,7 @@
               <li>Global edge network</li>
             </ul>
           </div>
-          <div class="glass-panel">
+          <div class="metric-card">
             <h4 style="color: var(--apple-blue);">Features</h4>
             <ul style="margin-top: 24px;">
               <li>Built-in voice activity detection</li>
@@ -325,8 +323,8 @@
     <!-- Business Model -->
     <section>
       <h2>Revenue Model</h2>
-      <div class="grid grid-3" style="margin-top: 64px;">
-        <div class="apple-card fragment scale-in">
+      <div class="grid grid-3" class="mt-6">
+        <div class="metric-card fragment scale-in">
           <div style="text-align: center;">
             <div class="metric gradient-text">$5-50K</div>
             <div class="metric-label">per month</div>
@@ -335,7 +333,7 @@
           </div>
         </div>
         
-        <div class="apple-card fragment scale-in">
+        <div class="metric-card fragment scale-in">
           <div style="text-align: center;">
             <div class="metric gradient-text">$2K</div>
             <div class="metric-label">per month</div>
@@ -344,7 +342,7 @@
           </div>
         </div>
         
-        <div class="apple-card fragment scale-in">
+        <div class="metric-card fragment scale-in">
           <div style="text-align: center;">
             <div class="metric gradient-text">$0.10</div>
             <div class="metric-label">per query</div>
@@ -354,8 +352,8 @@
         </div>
       </div>
       
-      <div style="text-align: center; margin-top: 64px;" class="fragment">
-        <p style="font-size: 28px; color: var(--apple-gray);">Projected Year 1</p>
+      <div class="revenue-section fragment">
+        <p class="section-subtitle">Projected Year 1</p>
         <div class="metric gradient-text">$2.4M ARR</div>
       </div>
     </section>
@@ -363,41 +361,41 @@
     <!-- Market Opportunity -->
     <section>
       <h2>Market Opportunity</h2>
-      <div class="glass-panel" style="margin-top: 48px;">
-        <div class="grid grid-2" style="gap: 48px;">
+      <div class="metric-card mt-5">
+        <div class="grid grid-2 gap-5">
           <div>
-            <h3 style="margin-bottom: 32px;">Target Markets</h3>
-            <div style="margin-bottom: 24px;">
-              <div style="display: flex; justify-content: space-between; align-items: baseline;">
-                <span style="font-size: 21px;">Voice AI</span>
-                <span style="font-size: 28px; font-weight: 600; color: var(--apple-blue);">$31.82B</span>
+            <h3 class="mb-4">Target Markets</h3>
+            <div class="market-bar">
+              <div class="market-bar-header">
+                <span class="market-bar-label">Voice AI</span>
+                <span class="market-bar-value">$31.82B</span>
               </div>
-              <div style="height: 8px; background: var(--apple-gray-light); border-radius: 4px; margin-top: 8px;">
-                <div style="height: 100%; width: 80%; background: var(--gradient-primary); border-radius: 4px;"></div>
-              </div>
-            </div>
-            <div style="margin-bottom: 24px;">
-              <div style="display: flex; justify-content: space-between; align-items: baseline;">
-                <span style="font-size: 21px;">Legal Tech</span>
-                <span style="font-size: 28px; font-weight: 600; color: var(--apple-blue);">$23.5B</span>
-              </div>
-              <div style="height: 8px; background: var(--apple-gray-light); border-radius: 4px; margin-top: 8px;">
-                <div style="height: 100%; width: 60%; background: var(--gradient-primary); border-radius: 4px;"></div>
+              <div class="market-bar-track">
+                <div class="market-bar-fill" style="width: 80%;"></div>
               </div>
             </div>
-            <div>
-              <div style="display: flex; justify-content: space-between; align-items: baseline;">
-                <span style="font-size: 21px;">Procurement</span>
-                <span style="font-size: 28px; font-weight: 600; color: var(--apple-blue);">$9.8B</span>
+            <div class="market-bar">
+              <div class="market-bar-header">
+                <span class="market-bar-label">Legal Tech</span>
+                <span class="market-bar-value">$23.5B</span>
               </div>
-              <div style="height: 8px; background: var(--apple-gray-light); border-radius: 4px; margin-top: 8px;">
-                <div style="height: 100%; width: 40%; background: var(--gradient-primary); border-radius: 4px;"></div>
+              <div class="market-bar-track">
+                <div class="market-bar-fill" style="width: 60%;"></div>
+              </div>
+            </div>
+            <div class="market-bar">
+              <div class="market-bar-header">
+                <span class="market-bar-label">Procurement</span>
+                <span class="market-bar-value">$9.8B</span>
+              </div>
+              <div class="market-bar-track">
+                <div class="market-bar-fill" style="width: 40%;"></div>
               </div>
             </div>
           </div>
-          <div style="text-align: center; display: flex; align-items: center; justify-content: center;">
+          <div class="flex flex-items-center text-center" style="justify-content: center;">
             <div>
-              <p style="font-size: 21px; color: var(--apple-gray); margin-bottom: 16px;">Total Addressable Market</p>
+              <p class="text-medium text-secondary mb-2">Total Addressable Market</p>
               <div class="metric gradient-text">$68B+</div>
             </div>
           </div>
@@ -443,7 +441,7 @@
     <!-- Traction -->
     <section>
       <h2>Current Status</h2>
-      <div class="grid grid-4" style="margin-top: 64px;">
+      <div class="grid grid-4" class="mt-6">
         <div class="metric-card fragment scale-in">
           <div class="icon-float" style="font-size: 64px;">✅</div>
           <h4>MVP Complete</h4>
@@ -468,13 +466,12 @@
     </section>
 
     <!-- Call to Action -->
-    <section data-background-color="#000000">
-      <div class="hero-mesh" style="opacity: 0.3;"></div>
-      <h1 style="color: white;">TruthGuard AI</h1>
-      <p style="color: white; opacity: 0.9; font-size: 32px; margin-top: 32px;">
+    <section>
+      <h1 class="metric gradient-text">TruthGuard AI</h1>
+      <p class="lead" style="font-size: 32px; margin-top: 32px;">
         Making truth verification as simple as conversation
       </p>
-      <div style="margin-top: 64px;" class="fragment fade-in-up">
+      <div class="mt-6" class="fragment fade-in-up">
         <a href="#" class="btn btn-primary" style="font-size: 21px; padding: 20px 40px;">
           Schedule Demo
         </a>
@@ -488,10 +485,10 @@
     <section>
       <h1>Questions</h1>
       <p class="lead">Let's discuss how TruthGuard AI can transform your industry</p>
-      <div style="margin-top: 64px;">
-        <div class="badge badge-secondary" style="font-size: 19px; padding: 12px 24px; margin: 8px;">Live Demo</div>
-        <div class="badge badge-secondary" style="font-size: 19px; padding: 12px 24px; margin: 8px;">Technical Deep Dive</div>
-        <div class="badge badge-secondary" style="font-size: 19px; padding: 12px 24px; margin: 8px;">Partnership Opportunities</div>
+      <div class="mt-6">
+        <div class="badge badge-outline">Live Demo</div>
+        <div class="badge badge-outline">Technical Deep Dive</div>
+        <div class="badge badge-outline">Partnership Opportunities</div>
       </div>
     </section>
   </div>
