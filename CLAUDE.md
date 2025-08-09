@@ -2,6 +2,17 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Critical Testing Principles
+
+**NEVER skip tests. NEVER mask errors. NEVER avoid failures.**
+
+- It is NEVER appropriate to skip a test case
+- It is NEVER okay to avoid errors or mask them
+- It is NEVER okay to skip things because we can't get them to work
+- If a test fails, FIX THE CODE or FIX THE TEST - don't skip it
+- Tests must actually test real behavior, not just assert success
+- Every test must provide value and catch real regressions
+
 ## Project Overview
 
 This is a Rails 8.0.2 application called CowdungRails using modern Rails conventions and tooling:
