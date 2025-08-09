@@ -33,29 +33,55 @@ class ProcessAudioJob < ApplicationJob
         if new_words.any?
           new_text = new_words.map { |w| w["word"] }.join(" ").strip
         else
-          # Fallback: take the last portion of the text
-          new_text = transcribed_text.split(" ").last(20).join(" ")
+          # Fallback: smart deduplication based on existing transcript
+          existing_text = session_transcript.current_text.to_s.strip
+
+          if existing_text.present?
+            # Get the last 50 chars of existing transcript for comparison
+            tail_length = [ existing_text.length, 50 ].min
+            existing_tail = existing_text[-tail_length..]
+
+            # Find where the existing text ends in the new transcription
+            overlap_index = transcribed_text.index(existing_tail)
+
+            if overlap_index
+              # Extract only the portion after the overlap
+              new_text = transcribed_text[(overlap_index + existing_tail.length)..]&.strip || ""
+            else
+              # No clear overlap found - be conservative and take less
+              new_text = transcribed_text.split(" ").last(10).join(" ")
+            end
+          else
+            # No existing text, use all of it
+            new_text = transcribed_text
+          end
         end
       else
         # First transcription or final mode - use all text
         new_text = transcribed_text
       end
 
-      # Update the session transcript
-      session_transcript.update!(
-        current_text: session_transcript.current_text.to_s + " " + new_text
-      )
+      # Update the session transcript only if we have new content
+      if new_text.present? && new_text.strip.length > 0
+        session_transcript.update!(
+          current_text: (session_transcript.current_text.to_s + " " + new_text).strip
+        )
 
-      # Broadcast the update
-      ActionCable.server.broadcast(
-        "detector_#{session_id}",
-        {
-          type: "transcription",
-          text: new_text,
-          narrative_text: session_transcript.current_text.strip,
-          timestamp: Time.current
-        }
-      )
+        # Broadcast the update
+        ActionCable.server.broadcast(
+          "detector_#{session_id}",
+          {
+            type: "transcription",
+            text: new_text,
+            narrative_text: session_transcript.current_text.strip,
+            timestamp: Time.current
+          }
+        )
+
+        Rails.logger.info "✅ Added to transcript: #{new_text.truncate(100)}"
+      else
+        Rails.logger.info "ℹ️  No new content to add"
+      end
 
       # Clean up old chunks (keep last 60 seconds)
       if end_sequence > 60
@@ -63,8 +89,6 @@ class ProcessAudioJob < ApplicationJob
                   .where("sequence < ?", end_sequence - 60)
                   .destroy_all
       end
-
-      Rails.logger.info "✅ Added to transcript: #{new_text.truncate(100)}"
     else
       Rails.logger.error "❌ Transcription failed: #{result[:error]}"
     end
