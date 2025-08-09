@@ -79,6 +79,13 @@ bin/rails routes -g users   # Grep routes
 bin/rake roast:debug_greeting      # Test greeting workflow with real API
 bin/rake roast:debug_example       # Test example workflow (INPUT="your text")
 bin/rake roast:debug_raix         # Test Raix configuration directly
+
+# Bullshit Detector Tasks
+bin/rake detector:test_audio       # Test audio processing with mock data
+bin/rake detector:test_transcription # Test transcription with real API
+bin/rake detector:test_bullshit    # Test BS detection with sample text
+bin/rake detector:e2e              # End-to-end test with simulated audio
+bin/rake bullshit_detector:test    # Full BS detection test with example text
 ```
 
 ## Architecture & Structure
@@ -108,6 +115,27 @@ Current AI features:
 - Audio recording interface at `/audio` with 10-second recording/playback
 - Greeting workflow at `/pages/greeting` demonstrating Roast integration
 - Example workflow job `RunExampleWorkflowJob` for background AI processing
+- Bullshit Detector at `/detector` - Real-time transcription + BS detection
+
+#### Transcription Approach & Limitations
+
+**Current**: Using OpenAI Whisper API with rolling context windows
+- **Limitations**:
+  - Whisper does NOT support streaming (requires complete audio files)
+  - Hallucinates/repeats words on silence
+  - 2-3 second latency minimum
+  - High API costs for continuous usage
+
+**Mitigations implemented**:
+- Frontend VAD (Voice Activity Detection) to skip silent chunks
+- Backend repetition filtering to remove hallucinated duplicates
+- Rolling 30-second context windows for better accuracy
+
+**Recommended alternatives for true real-time**:
+1. **Deepgram Streaming API** - WebSocket streaming, 200-300ms latency
+2. **AssemblyAI Real-Time** - WebSocket-based streaming
+3. **Google Speech-to-Text Streaming**
+4. Keep Whisper only for final/archive quality transcription
 
 ### Testing
 - **Framework**: Minitest ONLY (never RSpec or Mocha)
@@ -121,7 +149,7 @@ Current AI features:
 
 ## Important Project-Specific Notes
 
-1. **No Service Objects**: Use Jobs for complex operations (e.g., TranscriptionJob pattern)
+1. **No Service Objects**: Use Jobs for complex operations (e.g., ProcessAudioJob, DetectBullshitJob)
 2. **RESTful Routes Only**: Always use RESTful controllers, never custom routes
 3. **Code Style**: Follows rubocop-rails-omakase without custom overrides
 4. **Browser Support**: Modern browsers only (Chrome/Edge 123+, Firefox 122+, Safari 17.2+)
@@ -140,6 +168,8 @@ Current AI features:
 - Deployment (Kamal + Docker)
 - AI integration (Raix + Roast)
 - Audio recording with MediaRecorder API
+- Real-time WebSocket streaming (ActionCable)
+- Bullshit detection system
 
 ### Gems Included but Not Configured:
 - Devise (authentication)
@@ -147,9 +177,15 @@ Current AI features:
 - dotenv-rails (environment variables)
 
 ### Current Routes:
-- `/` - Welcome page
-- `/audio` - Audio recording interface
-- `/pages/greeting` - AI greeting demo
+- `/` - Bullshit detector interface (root)
+- `/up` - Health check endpoint
+
+### Current Models:
+- `AudioChunk` - Stores raw audio data from browser
+- `TranscriptionSegment` - Individual transcription results
+- `TranscriptionSession` - Groups transcriptions by session
+- `SessionTranscript` - Full session transcripts
+- `BullshitAnalysis` - Detected BS with categorization
 
 ### Next Steps for New Features:
 1. For authentication: Configure Devise with `rails generate devise:install`
@@ -200,6 +236,11 @@ Rails.configuration.x       # View all custom configs
 
 # Test Raix/OpenAI connection
 Raix.configuration.openai_client.present?
+
+# Debug audio processing
+AudioChunk.last.audio_data.bytesize  # Check audio data size
+TranscriptionSegment.recent.pluck(:text, :created_at)  # Recent transcriptions
+BullshitAnalysis.where(is_duplicate: false).pluck(:detected_bs, :category)
 ```
 
 ## Common Pitfalls
@@ -209,6 +250,8 @@ Raix.configuration.openai_client.present?
 3. **External HTTP**: WebMock blocks all except localhost
 4. **Credentials**: Always use `rails credentials:edit` for secrets
 5. **Roast Workflows**: Must run in temp directory with proper file structure
+6. **Audio Format**: Browser sends PCM audio, not WebM - handle accordingly
+7. **WebSocket Timing**: Ensure ActionCable connection established before streaming
 
 ## Source Control
 
