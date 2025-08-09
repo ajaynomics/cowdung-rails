@@ -31,12 +31,10 @@ class DetectorChannel < ApplicationCable::Channel
 
     Rails.logger.info "Saved chunk #{sequence} for session #{@session_id}"
 
-    # Process every 10 seconds (10 chunks) with sliding window
-    # Include up to 2 prior chunks for context continuity
+    # Process every 10 seconds (10 chunks)
     if (sequence + 1) % 10 == 0
-      # Include 2 prior chunks if available for context
-      start_seq = [ sequence - 11, 0 ].max  # Go back 12 chunks total, but not below 0
-      Rails.logger.info "Processing 10-second batch with context: chunks #{start_seq}-#{sequence}"
+      start_seq = sequence - 9
+      Rails.logger.info "Processing 10-second batch: chunks #{start_seq}-#{sequence}"
       ProcessAudioJob.perform_later(@session_id, start_seq, sequence)
     end
   end

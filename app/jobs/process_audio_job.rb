@@ -4,21 +4,22 @@ class ProcessAudioJob < ApplicationJob
   def perform(session_id, start_sequence, end_sequence)
     Rails.logger.info "Processing audio chunks for session #{session_id}, sequences #{start_sequence}-#{end_sequence}"
 
-    # Get all chunks in range (including context chunks)
+    # ALWAYS include chunk 0 to get the WebM header
+    # This is required for proper WebM file creation
+    actual_start = 0
     all_chunks = AudioChunk.for_session(session_id)
-                           .where(sequence: start_sequence..end_sequence)
+                           .where(sequence: actual_start..end_sequence)
                            .in_sequence
 
     if all_chunks.empty?
-      Rails.logger.warn "No chunks found for session #{session_id}, sequences #{start_sequence}-#{end_sequence}"
+      Rails.logger.warn "No chunks found for session #{session_id}, sequences #{actual_start}-#{end_sequence}"
       return
     end
 
-    # Identify which chunks are new (last 10) vs context (first 2)
-    new_chunks = all_chunks.select { |c| c.sequence > end_sequence - 10 }
-    context_chunks = all_chunks - new_chunks
+    # Determine which chunks are new vs already processed
+    new_chunks = all_chunks.select { |c| c.sequence >= start_sequence && c.sequence <= end_sequence }
 
-    Rails.logger.info "Found #{all_chunks.count} total chunks: #{context_chunks.count} context, #{new_chunks.count} new"
+    Rails.logger.info "Found #{all_chunks.count} chunks total (including header), #{new_chunks.count} new chunks to process"
 
     # Log chunk details for debugging
     all_chunks.each_with_index do |chunk, idx|
@@ -41,7 +42,7 @@ class ProcessAudioJob < ApplicationJob
         duration: new_chunks.count # Approximate duration in seconds
       )
 
-      # Mark only NEW chunks as processed (not context chunks)
+      # Mark only NEW chunks as processed
       new_chunks.each { |chunk| chunk.update!(processed: true) }
 
       # Broadcast the transcription to the frontend
@@ -50,14 +51,13 @@ class ProcessAudioJob < ApplicationJob
         {
           type: "transcription",
           text: result.text,
-          start_sequence: new_chunks.first.sequence,
-          end_sequence: new_chunks.last.sequence,
+          start_sequence: start_sequence,
+          end_sequence: end_sequence,
           timestamp: Time.current
         }
       )
 
       # Delete only the NEW processed audio chunks to save space
-      # Keep context chunks as they might be needed for next batch
       new_chunks.each(&:destroy)
 
       Rails.logger.info "✅ Transcription complete for session #{session_id}: #{result.text.truncate(100)}"
