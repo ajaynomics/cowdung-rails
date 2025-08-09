@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_09_050405) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_09_050943) do
   create_table "audio_chunks", force: :cascade do |t|
     t.string "session_id", null: false
     t.text "data", null: false
@@ -20,6 +20,19 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_09_050405) do
     t.string "format"
     t.integer "sample_rate"
     t.index ["session_id", "sequence"], name: "index_audio_chunks_on_session_id_and_sequence", unique: true
+  end
+
+  create_table "bullshit_analyses", force: :cascade do |t|
+    t.string "session_id"
+    t.boolean "detected"
+    t.float "confidence"
+    t.string "bs_type"
+    t.text "explanation"
+    t.text "quote"
+    t.text "analyzed_text"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["session_id"], name: "index_bullshit_analyses_on_session_id"
   end
 
   create_table "session_transcripts", force: :cascade do |t|

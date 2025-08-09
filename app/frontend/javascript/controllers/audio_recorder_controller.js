@@ -137,6 +137,8 @@ export default class extends Controller {
         // Handle different types of messages
         if (data.type === 'transcription') {
           this.displayTranscription(data)
+        } else if (data.type === 'bullshit_detected') {
+          this.displayBullshitAlert(data)
         }
       }
     })
@@ -346,6 +348,55 @@ export default class extends Controller {
         </div>
       `
     }
+  }
+  
+  displayBullshitAlert(data) {
+    if (!data.detected) return
+    
+    // Create or update BS alert
+    let alertContainer = document.getElementById('bullshit-alert')
+    if (!alertContainer) {
+      alertContainer = document.createElement('div')
+      alertContainer.id = 'bullshit-alert'
+      alertContainer.className = 'fixed top-4 right-4 max-w-md z-50'
+      document.body.appendChild(alertContainer)
+    }
+    
+    // Create alert element
+    const alert = document.createElement('div')
+    alert.className = 'bg-red-100 border-l-4 border-red-500 p-4 rounded-lg shadow-lg mb-2 transform transition-all duration-500 scale-0'
+    alert.innerHTML = `
+      <div class="flex items-start">
+        <div class="flex-shrink-0">
+          <span class="text-2xl">🚨</span>
+        </div>
+        <div class="ml-3">
+          <p class="text-sm font-bold text-red-800">Bullshit Detected!</p>
+          <p class="text-sm text-red-700 mt-1">${data.explanation}</p>
+          ${data.quote ? `<p class="text-xs text-red-600 mt-2 italic">"${data.quote}"</p>` : ''}
+          <p class="text-xs text-red-500 mt-1">Confidence: ${Math.round(data.confidence * 100)}%</p>
+        </div>
+        <button onclick="this.parentElement.parentElement.remove()" class="ml-3 text-red-400 hover:text-red-600">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"/>
+          </svg>
+        </button>
+      </div>
+    `
+    
+    alertContainer.appendChild(alert)
+    
+    // Animate in
+    setTimeout(() => {
+      alert.classList.remove('scale-0')
+      alert.classList.add('scale-100')
+    }, 100)
+    
+    // Auto-remove after 10 seconds
+    setTimeout(() => {
+      alert.classList.add('scale-0')
+      setTimeout(() => alert.remove(), 500)
+    }, 10000)
   }
   
   disconnect() {
