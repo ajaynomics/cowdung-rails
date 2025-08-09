@@ -28,11 +28,14 @@ html, body {
 .reveal .slides section {
   height: 100%;
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  /* Don't use flex on sections - it breaks auto-animate! */
+  /* display: flex; */
+  /* flex-direction: column; */
+  /* justify-content: center; */
+  /* align-items: center; */
   text-align: center;
+  padding: 60px 40px;
+  box-sizing: border-box;
 }
 
 /* Gradient text effect */
@@ -672,6 +675,32 @@ html, body {
 .reveal .text-white-muted {
   color: white;
   opacity: 0.8;
+}
+
+
+/* Reveal.js layout helpers */
+.reveal .r-hstack {
+  display: flex;
+  flex-direction: row;
+}
+
+.reveal .r-vstack {
+  display: flex;
+  flex-direction: column;
+}
+
+.reveal .r-stack {
+  display: grid;
+  grid-template-rows: 1fr;
+}
+
+.reveal .r-stack > * {
+  grid-area: 1/1;
+  margin: auto;
+}
+
+.reveal .justify-center {
+  justify-content: center;
 }
 
 /* Responsive adjustments */

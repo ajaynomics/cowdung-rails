@@ -4,10 +4,8 @@
  */
 
 /* Ensure Tailwind utilities work properly within reveal.js */
-.reveal .slides section {
-  /* Allow Tailwind positioning */
-  position: relative;
-}
+/* WARNING: Do NOT set position: relative on sections - it breaks auto-animate! */
+/* If you need positioning context for specific elements, add classes to those elements */
 
 /* Fix reveal.js z-index issues with Tailwind components */
 .reveal .slide-card {

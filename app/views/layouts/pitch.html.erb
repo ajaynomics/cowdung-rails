@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Soundcheck - Voice-First Truth Verification</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <!-- Vite for reveal.js and pitch-specific styles ONLY -->
+    <%= vite_client_tag %>
+    <%= vite_javascript_tag 'pitch' %>
+    <%= vite_stylesheet_tag 'pitch.css' %>
+  </head>
+
+  <body>
+    <%= yield %>
+  </body>
+</html>
