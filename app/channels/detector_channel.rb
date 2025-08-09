@@ -20,30 +20,16 @@ class DetectorChannel < ApplicationCable::Channel
       sample_rate: data["sample_rate"] || 44100
     )
 
-    # Process every 3 seconds with sliding window (quick pass)
-    # First window at chunk 2 (sequences 0-2)
-    # Then slide by 2: chunks 4 (2-4), 6 (4-6), etc.
-    if chunk.sequence == 2 || (chunk.sequence > 2 && (chunk.sequence - 2) % 2 == 0)
-      # Calculate window with 1-second overlap
-      end_seq = chunk.sequence
-      start_seq = [ 0, end_seq - 2 ].max
-
-      ProcessAudioJob.perform_later(@session_id, start_seq, end_seq, "quick")
+    # Transcribe with rolling context every 2 seconds
+    # Keep last 30 seconds (30 chunks) for context, but focus on recent audio
+    if chunk.sequence >= 1 && chunk.sequence % 2 == 1
+      # Include up to 30 seconds of context
+      start_seq = [ 0, chunk.sequence - 29 ].max
+      ProcessAudioJob.perform_later(@session_id, start_seq, chunk.sequence, "rolling")
     end
 
-    # Process every 10 seconds (quality pass)
-    # Start at chunk 9 (10 seconds) then every 10 chunks: 9, 19, 29, etc.
-    if chunk.sequence >= 9 && (chunk.sequence + 1) % 10 == 0
-      # Process last 10 chunks for quality
-      end_seq = chunk.sequence
-      start_seq = [ 0, end_seq - 9 ].max
-
-      ProcessAudioJob.perform_later(@session_id, start_seq, end_seq, "quality")
-    end
-
-    # Run BS detection every 5 seconds on full transcript
-    # Start at chunk 4 (5 seconds) then every 5 chunks: 4, 9, 14, 19, etc.
-    if chunk.sequence >= 4 && (chunk.sequence + 1) % 5 == 0
+    # Run BS detection every 3 seconds on the full accumulated transcript
+    if chunk.sequence >= 2 && (chunk.sequence + 1) % 3 == 0
       DetectBullshitJob.perform_later(@session_id)
     end
   end
@@ -59,19 +45,14 @@ class DetectorChannel < ApplicationCable::Channel
     remaining_chunks = AudioChunk.for_session(@session_id)
     return if remaining_chunks.empty?
 
-    # Get the highest sequence number
+    # Process any final chunks
     last_sequence = remaining_chunks.maximum(:sequence)
-
-    # Process all remaining chunks with quality pass
     if last_sequence >= 0
-      # Process up to 30 chunks or all if less
       start_seq = [ 0, last_sequence - 29 ].max
-      Rails.logger.info "Processing remaining chunks for session #{@session_id}, sequences #{start_seq}-#{last_sequence}"
       ProcessAudioJob.perform_later(@session_id, start_seq, last_sequence, "final")
     end
 
-    # Mark session as completed
-    session_transcript = SessionTranscript.find_by(session_id: @session_id)
-    session_transcript&.update!(status: "completed")
+    # Clean up chunks after a delay
+    AudioChunk.for_session(@session_id).destroy_all
   end
 end

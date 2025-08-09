@@ -33,56 +33,45 @@ class ProcessAudioJobTest < ActiveJob::TestCase
     end
 
     # Run the job
-    assert_difference "TranscriptionSegment.count", 1 do
-      assert_difference "TranscriptionSession.count", 1 do
-        assert_difference "SessionTranscript.count", 1 do
-          ProcessAudioJob.perform_now(session_id, 0, 2, "quick")
-        end
-      end
+    assert_difference "SessionTranscript.count", 1 do
+      ProcessAudioJob.perform_now(session_id, 0, 2, "rolling")
     end
 
-    # Verify transcription was created
-    segment = TranscriptionSegment.last
-    assert_equal "This is a test transcription", segment.text
-    assert_equal 0, segment.start_sequence
-    assert_equal 2, segment.end_sequence
-
-    # Verify transcription session was created and updated
-    session = TranscriptionSession.find_by(session_id: session_id)
-    assert_equal "This is a test transcription", session.last_processed_text
-    assert_equal [ [ 0, 2 ] ], session.processed_sequences_array
+    # Verify session transcript was created
+    transcript = SessionTranscript.find_by(session_id: session_id)
+    assert_equal "This is a test transcription", transcript.current_text.strip
   end
 
-  test "job handles overlapping windows with deduplication" do
+  test "job handles rolling context mode" do
     # Stub the OpenAI API calls
     stub_request(:post, "https://api.openai.com/v1/audio/transcriptions")
       .to_return(
         { status: 200,
           body: {
-            text: "Hello world this is",
+            text: "Hello world",
             words: [
               { word: "Hello", start: 0.0, end: 0.5 },
-              { word: "world", start: 0.5, end: 1.0 },
-              { word: "this", start: 1.0, end: 1.3 },
-              { word: "is", start: 1.3, end: 1.5 }
+              { word: "world", start: 0.5, end: 1.0 }
             ]
           }.to_json },
         { status: 200,
           body: {
-            text: "this is a test",
+            text: "Hello world this is a test",
             words: [
-              { word: "this", start: 0.0, end: 0.3 },
-              { word: "is", start: 0.3, end: 0.5 },
-              { word: "a", start: 0.5, end: 0.7 },
-              { word: "test", start: 0.7, end: 1.0 }
+              { word: "Hello", start: 0.0, end: 0.5 },
+              { word: "world", start: 0.5, end: 1.0 },
+              { word: "this", start: 10.0, end: 10.3 },
+              { word: "is", start: 10.3, end: 10.5 },
+              { word: "a", start: 10.5, end: 10.7 },
+              { word: "test", start: 10.7, end: 11.0 }
             ]
           }.to_json }
       )
 
-    session_id = "test-overlap"
+    session_id = "test-rolling"
 
-    # Create chunks for two overlapping windows
-    5.times do |i|
+    # Create chunks
+    15.times do |i|
       AudioChunk.create!(
         session_id: session_id,
         data: Base64.encode64("audio data #{i}"),
@@ -92,18 +81,14 @@ class ProcessAudioJobTest < ActiveJob::TestCase
       )
     end
 
-    # Process first window (0-2)
-    ProcessAudioJob.perform_now(session_id, 0, 2, "quick")
+    # Process first batch
+    ProcessAudioJob.perform_now(session_id, 0, 2, "rolling")
 
-    # Process overlapping window (2-4)
-    ProcessAudioJob.perform_now(session_id, 2, 4, "quick")
+    # Process with rolling context
+    ProcessAudioJob.perform_now(session_id, 5, 14, "rolling")
 
-    # Should have created 2 segments but detected overlap
-    assert_equal 2, TranscriptionSegment.where(session_id: session_id).count
-
-    # Verify session tracked both windows
-    session = TranscriptionSession.find_by(session_id: session_id)
-    assert_equal [ [ 0, 2 ], [ 2, 4 ] ], session.processed_sequences_array
-    assert_equal "this is a test", session.last_processed_text
+    # Verify transcript accumulated correctly
+    transcript = SessionTranscript.find_by(session_id: session_id)
+    assert_equal "Hello world this is a test", transcript.current_text.strip
   end
 end
