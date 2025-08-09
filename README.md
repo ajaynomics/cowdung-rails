@@ -1,3 +1,5 @@
+_A one-shot Claude Code experiment inspired by the SOMA Voice AI Hackathon in San Francisco on August 9, 2025._
+
 <img width="1910" height="794" alt="image" src="https://github.com/user-attachments/assets/6a89f65e-a946-4d45-864d-b3f1eb6fae92" />
 
 # 🐄 Cowdung: The BS Detector
