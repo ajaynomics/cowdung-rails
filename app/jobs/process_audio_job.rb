@@ -15,7 +15,7 @@ class ProcessAudioJob < ApplicationJob
     end
 
     Rails.logger.info "Found #{chunks.count} chunks to process"
-    
+
     # Log chunk details for debugging
     chunks.each_with_index do |chunk, idx|
       data = Base64.decode64(chunk.data)

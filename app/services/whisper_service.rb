@@ -40,59 +40,70 @@ class WhisperService
   private
 
   def create_webm_from_segments(audio_chunks)
-    # Since browser sends 5-second chunks that are WebM segments,
-    # we need to create a proper WebM container with header
+    # Browser MediaRecorder sends WebM segments:
+    # - First chunk: Has EBML header + segment data
+    # - Later chunks: Just segment data (no headers)
+    # We need to reconstruct a complete WebM file
 
-    # For now, if we only have one chunk, just use it directly
-    if audio_chunks.size == 1
-      temp_file = Tempfile.new([ "audio", ".webm" ])
-      temp_file.binmode
-      temp_file.write(Base64.decode64(audio_chunks.first.data))
-      temp_file.rewind
-      return temp_file
-    end
-
-    # For multiple chunks, we need to use ffmpeg to create a proper container
-    # Each chunk is a WebM segment, not a complete file
     output_file = Tempfile.new([ "complete_audio", ".webm" ])
-    chunk_files = []
+    output_file.binmode
 
     begin
-      # Write each segment to a temporary file
-      audio_chunks.each_with_index do |chunk, index|
-        chunk_file = Tempfile.new([ "segment_#{index}", ".webm" ])
-        chunk_file.binmode
-        chunk_file.write(Base64.decode64(chunk.data))
-        chunk_file.close
-        chunk_files << chunk_file
-      end
+      # Check if first chunk has valid WebM header
+      first_chunk_data = Base64.decode64(audio_chunks.first.data)
+      header_bytes = first_chunk_data[0..3].unpack("C*")
 
-      # Use ffmpeg to create a proper WebM file from segments
-      # We'll use the concat protocol which works better for segments
-      inputs = chunk_files.map { |f| "-i #{f.path}" }.join(" ")
-      filter_complex = chunk_files.each_index.map { |i| "[#{i}:a]" }.join("") + "concat=n=#{chunk_files.size}:v=0:a=1[out]"
-
-      cmd = "ffmpeg #{inputs} -filter_complex \"#{filter_complex}\" -map \"[out]\" -c:a libopus -b:a 32k #{output_file.path} -y 2>&1"
-      Rails.logger.info "Creating WebM container with command: #{cmd}"
-
-      output = `#{cmd}`
-      success = $?.success?
-
-      unless success
-        Rails.logger.error "Failed to create WebM container: #{output}"
-        # Fallback: just use the first chunk
-        output_file.binmode
-        output_file.write(Base64.decode64(audio_chunks.first.data))
-        Rails.logger.warn "Using first chunk as fallback"
+      if header_bytes == [ 0x1A, 0x45, 0xDF, 0xA3 ] # Valid EBML header
+        Rails.logger.info "First chunk has valid WebM header"
+        # Simple concatenation might work
+        audio_chunks.each do |chunk|
+          output_file.write(Base64.decode64(chunk.data))
+        end
       else
-        Rails.logger.info "Successfully created WebM container"
+        Rails.logger.info "Using ffmpeg to reconstruct WebM from segments"
+        # Use ffmpeg to create proper WebM from segments
+
+        # Write all data to a single file first
+        concat_file = Tempfile.new([ "concat", ".webm" ])
+        concat_file.binmode
+        audio_chunks.each do |chunk|
+          concat_file.write(Base64.decode64(chunk.data))
+        end
+        concat_file.close
+
+        # Use ffmpeg to create a proper WebM file
+        cmd = "ffmpeg -i #{concat_file.path} -c:a copy #{output_file.path} -y 2>&1"
+        Rails.logger.info "Running: #{cmd}"
+
+        output = `#{cmd}`
+        success = $?.success?
+
+        unless success
+          Rails.logger.error "ffmpeg failed: #{output}"
+          # Last resort: try with re-encoding
+          cmd = "ffmpeg -i #{concat_file.path} -c:a libopus -b:a 32k #{output_file.path} -y 2>&1"
+          output = `#{cmd}`
+          success = $?.success?
+
+          unless success
+            Rails.logger.error "ffmpeg re-encode failed: #{output}"
+            # Ultimate fallback: use raw concatenation
+            output_file.rewind
+            audio_chunks.each do |chunk|
+              output_file.write(Base64.decode64(chunk.data))
+            end
+          end
+        end
+
+        concat_file.unlink rescue nil
       end
 
       output_file.rewind
       output_file
-    ensure
-      # Clean up segment files
-      chunk_files.each { |f| f.unlink rescue nil }
+    rescue => e
+      Rails.logger.error "Error creating WebM: #{e.message}"
+      output_file.rewind
+      output_file
     end
   end
 end

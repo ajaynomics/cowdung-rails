@@ -31,9 +31,13 @@ class DetectorChannel < ApplicationCable::Channel
 
     Rails.logger.info "Saved chunk #{sequence} for session #{@session_id}"
 
-    # Process each 5-second chunk immediately (no concatenation needed)
-    Rails.logger.info "Processing single 5-second chunk #{sequence}"
-    ProcessAudioJob.perform_later(@session_id, sequence, sequence)
+    # Accumulate chunks and process every 30 seconds (6 chunks)
+    # This gives us meaningful audio for transcription
+    if (sequence + 1) % 6 == 0
+      start_seq = sequence - 5
+      Rails.logger.info "Processing 30-second batch: chunks #{start_seq}-#{sequence}"
+      ProcessAudioJob.perform_later(@session_id, start_seq, sequence)
+    end
   end
 
   private
