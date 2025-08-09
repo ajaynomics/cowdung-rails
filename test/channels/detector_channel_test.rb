@@ -74,19 +74,37 @@ class DetectorChannelTest < ActionCable::Channel::TestCase
     assert_equal 44100, chunk.sample_rate
   end
 
-  test "enqueues job every 10 chunks" do
+  test "enqueues job with sliding window every 3 chunks" do
     subscribe session_id: "test-job-session"
 
-    # First 9 chunks shouldn't trigger job
-    9.times do |i|
+    # First 2 chunks shouldn't trigger job
+    2.times do |i|
       perform :receive_audio, audio_chunk: "chunk#{i}"
     end
 
     assert_no_enqueued_jobs
 
-    # 10th chunk should trigger job
-    assert_enqueued_with(job: ProcessAudioJob) do
-      perform :receive_audio, audio_chunk: "chunk9"
+    # 3rd chunk (sequence 2) should trigger first job
+    assert_enqueued_with(job: ProcessAudioJob, args: [ "test-job-session", 0, 2, "quick" ]) do
+      perform :receive_audio, audio_chunk: "chunk2"
+    end
+
+    # 4th chunk (sequence 3) shouldn't trigger job
+    perform :receive_audio, audio_chunk: "chunk3"
+    assert_enqueued_jobs 1  # Still just one job
+
+    # 5th chunk (sequence 4) should trigger second job with overlap
+    assert_enqueued_with(job: ProcessAudioJob, args: [ "test-job-session", 2, 4, "quick" ]) do
+      perform :receive_audio, audio_chunk: "chunk4"
+    end
+
+    # Verify sliding window pattern continues
+    perform :receive_audio, audio_chunk: "chunk5"
+    assert_enqueued_jobs 2  # Still just two jobs
+
+    # 7th chunk (sequence 6) triggers third job
+    assert_enqueued_with(job: ProcessAudioJob, args: [ "test-job-session", 4, 6, "quick" ]) do
+      perform :receive_audio, audio_chunk: "chunk6"
     end
   end
 end

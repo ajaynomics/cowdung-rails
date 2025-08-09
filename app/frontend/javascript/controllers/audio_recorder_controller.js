@@ -32,6 +32,10 @@ export default class extends Controller {
   
   async start() {
     try {
+      // Clear previous transcriptions
+      this.resultsTarget.classList.add("hidden")
+      this.resultsListTarget.innerHTML = ""
+      
       // Generate session ID for this recording session
       this.sessionId = `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
       
@@ -56,6 +60,7 @@ export default class extends Controller {
       
       // Connect audio pipeline
       source.connect(this.scriptProcessor)
+      this.scriptProcessor.connect(this.audioContext.destination)
       
       // Capture PCM data
       this.scriptProcessor.onaudioprocess = (event) => {
@@ -90,7 +95,6 @@ export default class extends Controller {
           const buffer = combined.buffer
           const base64 = btoa(String.fromCharCode(...new Uint8Array(buffer)))
           
-          console.log(`Sending PCM audio: ${totalLength} samples (${(totalLength/this.sampleRate).toFixed(2)}s)`)
           this.subscription.perform('receive_audio', { 
             audio_chunk: base64,
             format: 'pcm16',
@@ -331,23 +335,17 @@ export default class extends Controller {
     // Show the results section
     this.resultsTarget.classList.remove("hidden")
     
-    // Create a new transcription entry
-    const entry = document.createElement("div")
-    entry.className = "mb-4 p-4 bg-gray-50 rounded-lg"
-    entry.innerHTML = `
-      <div class="text-sm text-gray-500 mb-1">
-        ${new Date(data.timestamp).toLocaleTimeString()}
-      </div>
-      <div class="text-gray-800">
-        ${data.text}
-      </div>
-    `
-    
-    // Append to results list
-    this.resultsListTarget.appendChild(entry)
-    
-    // Scroll to bottom to show latest
-    this.resultsListTarget.scrollTop = this.resultsListTarget.scrollHeight
+    if (data.narrative_text) {
+      // Display as flowing narrative
+      this.resultsListTarget.innerHTML = `
+        <div class="prose prose-gray max-w-none">
+          <p class="text-gray-800 leading-relaxed">${data.narrative_text}</p>
+        </div>
+        <div class="text-xs text-gray-400 mt-2">
+          Last updated: ${new Date(data.timestamp).toLocaleTimeString()}
+        </div>
+      `
+    }
   }
   
   disconnect() {
