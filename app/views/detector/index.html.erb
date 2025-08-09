@@ -29,20 +29,20 @@
         <button data-action="click->audio-recorder#start"
                 data-audio-recorder-target="startBtn"
                 class="bg-blue-500 hover:bg-blue-600 text-white font-bold px-8 py-4 rounded-lg text-lg transition-colors">
-          🎙️ Start Detecting BS
+          🎙️ Start Recording
         </button>
         
         <button data-action="click->audio-recorder#stop"
                 data-audio-recorder-target="stopBtn"
                 class="bg-red-500 hover:bg-red-600 text-white font-bold px-8 py-4 rounded-lg text-lg transition-colors hidden">
-          🛑 Stop Detecting
+          🛑 Stop Recording
         </button>
       </div>
       
       <!-- Status Display -->
       <div data-audio-recorder-target="status" 
            class="text-center text-gray-600 mb-4">
-        Ready to start detecting
+        Ready to start recording
       </div>
       
       <!-- Recording Indicator -->
@@ -50,7 +50,7 @@
            class="hidden text-center">
         <div class="inline-flex items-center space-x-2">
           <div class="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-          <span class="text-red-600 font-medium">Listening for BS...</span>
+          <span class="text-red-600 font-medium">Recording...</span>
         </div>
       </div>
       
@@ -68,12 +68,12 @@
       </div>
     </div>
     
-    <!-- BS Detection Results (placeholder for future) -->
+    <!-- Transcription Results -->
     <div data-audio-recorder-target="results" class="mt-8 hidden">
       <div class="bg-white rounded-lg shadow-lg p-6">
-        <h2 class="text-2xl font-bold mb-4">BS Detection Results</h2>
-        <div data-audio-recorder-target="resultsList">
-          <!-- Results will be inserted here -->
+        <h2 class="text-2xl font-bold mb-4">Live Transcription</h2>
+        <div data-audio-recorder-target="resultsList" class="max-h-96 overflow-y-auto">
+          <!-- Transcriptions will be inserted here -->
         </div>
       </div>
     </div>

@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+first_segment:
+  session_id: fixture-session-456
+  text: "This is the first transcribed segment of audio"
+  start_sequence: 0
+  end_sequence: 29
+  duration: 30.0
+
+second_segment:
+  session_id: fixture-session-456
+  text: "And this is the second segment that was transcribed"
+  start_sequence: 30
+  end_sequence: 59
+  duration: 30.0

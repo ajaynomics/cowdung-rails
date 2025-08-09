@@ -5,7 +5,7 @@ class AudioCaptureTest < ApplicationSystemTestCase
     visit root_path
 
     assert_selector "h1", text: "Bullshit Detector"
-    assert_button "Start Detecting BS"
+    assert_button "Start Recording"
   end
 
   test "toggles recording state when buttons clicked" do
@@ -45,7 +45,9 @@ class AudioCaptureTest < ApplicationSystemTestCase
 
       // Mock AudioContext
       window.AudioContext = class {
-        constructor() {}
+        constructor() {
+          this.sampleRate = 44100;
+        }
         createAnalyser() {
           return {
             fftSize: 256,
@@ -60,32 +62,41 @@ class AudioCaptureTest < ApplicationSystemTestCase
         createMediaStreamSource() {
           return { connect: function() {} };
         }
-        close() {}
+        createScriptProcessor(bufferSize, inputChannels, outputChannels) {
+          return {
+            connect: function() {},
+            disconnect: function() {},
+            onaudioprocess: null
+          };
+        }
+        close() {
+          return Promise.resolve();
+        }
       };
     JS
 
     # Initial state - start button visible, stop button hidden
-    assert_selector "button", text: "Start Detecting BS", visible: true
-    assert_selector "button", text: "Stop Detecting", visible: false
+    assert_selector "button", text: "Start Recording", visible: true
+    assert_selector "button", text: "Stop Recording", visible: false
     assert_selector "[data-audio-recorder-target='indicator']", visible: false
 
     # Click start button
-    click_button "Start Detecting BS"
+    click_button "Start Recording"
 
     # Verify UI changed to recording state
-    assert_selector "button", text: "Start Detecting BS", visible: false
-    assert_selector "button", text: "Stop Detecting", visible: true
+    assert_selector "button", text: "Start Recording", visible: false
+    assert_selector "button", text: "Stop Recording", visible: true
     assert_selector "[data-audio-recorder-target='indicator']", visible: true
-    assert_text "Listening for BS..."
+    assert_text "Recording audio..."
 
     # Click stop button
-    click_button "Stop Detecting"
+    click_button "Stop Recording"
 
     # Verify UI changed back to initial state
-    assert_selector "button", text: "Start Detecting BS", visible: true
-    assert_selector "button", text: "Stop Detecting", visible: false
+    assert_selector "button", text: "Start Recording", visible: true
+    assert_selector "button", text: "Stop Recording", visible: false
     assert_selector "[data-audio-recorder-target='indicator']", visible: false
-    assert_text "Stopped detecting"
+    assert_text "Stopped recording"
   end
 
   test "mute button toggles audio state" do
@@ -115,7 +126,9 @@ class AudioCaptureTest < ApplicationSystemTestCase
         }
       };
       window.AudioContext = class {
-        constructor() {}
+        constructor() {
+          this.sampleRate = 44100;
+        }
         createAnalyser() {
           return {
             fftSize: 256,
@@ -126,13 +139,22 @@ class AudioCaptureTest < ApplicationSystemTestCase
         createMediaStreamSource() {
           return { connect: function() {} };
         }
-        close() {}
+        createScriptProcessor() {
+          return {
+            connect: function() {},
+            disconnect: function() {},
+            onaudioprocess: null
+          };
+        }
+        close() {
+          return Promise.resolve();
+        }
       };
     JS
 
     # Start recording
-    click_button "Start Detecting BS"
-    assert_text "Listening for BS..."
+    click_button "Start Recording"
+    assert_text "Recording audio..."
 
     # Find and click mute button
     mute_button = find("[data-audio-recorder-target='muteBtn']")
@@ -144,7 +166,7 @@ class AudioCaptureTest < ApplicationSystemTestCase
 
     # Unmute the audio
     mute_button.click
-    assert_text "Listening for BS..."
+    assert_text "Recording audio..."
     assert_no_selector "[data-audio-recorder-target='muteBtn'].text-red-500"
   end
 
@@ -159,7 +181,7 @@ class AudioCaptureTest < ApplicationSystemTestCase
     JS
 
     # Try to start recording
-    click_button "Start Detecting BS"
+    click_button "Start Recording"
 
     # Verify permission error is shown
     assert_selector "[data-audio-recorder-target='permissionError']", visible: true
@@ -168,7 +190,7 @@ class AudioCaptureTest < ApplicationSystemTestCase
     assert_button "Try Again"
 
     # Verify recording did not start
-    assert_selector "button", text: "Start Detecting BS", visible: true
-    assert_selector "button", text: "Stop Detecting", visible: false
+    assert_selector "button", text: "Start Recording", visible: true
+    assert_selector "button", text: "Stop Recording", visible: false
   end
 end

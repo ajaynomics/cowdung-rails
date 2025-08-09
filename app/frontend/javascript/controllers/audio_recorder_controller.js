@@ -46,37 +46,67 @@ export default class extends Controller {
       const source = this.audioContext.createMediaStreamSource(this.stream)
       source.connect(this.analyser)
       
-      // Set up MediaRecorder for streaming
-      const options = {
-        mimeType: 'audio/webm;codecs=opus',
-        audioBitsPerSecond: 16000 // Low bitrate for streaming
-      }
+      // Set up audio capture using ScriptProcessorNode for PCM data
+      // This gives us raw audio we can easily process
+      const bufferSize = 16384 // ~370ms at 44.1kHz
+      this.sampleRate = this.audioContext.sampleRate
+      this.scriptProcessor = this.audioContext.createScriptProcessor(bufferSize, 1, 1)
+      this.pcmChunks = []
+      this.chunkDuration = 1000 // 1 second chunks
       
-      this.mediaRecorder = new MediaRecorder(this.stream, options)
+      // Connect audio pipeline
+      source.connect(this.scriptProcessor)
       
-      // Stream audio chunks every second
-      this.mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0 && this.subscription && !this.isMuted) {
-          // Convert blob to base64 for transmission
-          const reader = new FileReader()
-          reader.onloadend = () => {
-            const base64data = reader.result.split(',')[1]
-            this.subscription.perform('receive_audio', { audio_chunk: base64data })
-          }
-          reader.readAsDataURL(event.data)
+      // Capture PCM data
+      this.scriptProcessor.onaudioprocess = (event) => {
+        if (!this.isRecording || this.isMuted) return
+        
+        const inputData = event.inputBuffer.getChannelData(0)
+        // Convert Float32Array to Int16Array for smaller size
+        const pcm16 = new Int16Array(inputData.length)
+        for (let i = 0; i < inputData.length; i++) {
+          pcm16[i] = Math.max(-32768, Math.min(32767, inputData[i] * 32768))
         }
+        
+        this.pcmChunks.push(pcm16)
       }
       
       // Set up ActionCable subscription
       this.setupSubscription()
       
-      // Start recording with 1-second chunks
-      this.mediaRecorder.start(1000)
+      // Send PCM data every second
+      this.sendInterval = setInterval(() => {
+        if (this.pcmChunks.length > 0 && this.subscription && !this.isMuted) {
+          // Combine PCM chunks
+          const totalLength = this.pcmChunks.reduce((acc, chunk) => acc + chunk.length, 0)
+          const combined = new Int16Array(totalLength)
+          let offset = 0
+          this.pcmChunks.forEach(chunk => {
+            combined.set(chunk, offset)
+            offset += chunk.length
+          })
+          
+          // Convert to base64
+          const buffer = combined.buffer
+          const base64 = btoa(String.fromCharCode(...new Uint8Array(buffer)))
+          
+          console.log(`Sending PCM audio: ${totalLength} samples (${(totalLength/this.sampleRate).toFixed(2)}s)`)
+          this.subscription.perform('receive_audio', { 
+            audio_chunk: base64,
+            format: 'pcm16',
+            sample_rate: this.sampleRate
+          })
+          
+          // Clear chunks
+          this.pcmChunks = []
+        }
+      }, this.chunkDuration)
+      
       this.isRecording = true
       
       // Update UI
       this.updateUI(true)
-      this.statusTarget.textContent = "Listening for BS..."
+      this.statusTarget.textContent = "Recording audio..."
       
       // Start visualization
       this.visualize()
@@ -100,9 +130,9 @@ export default class extends Controller {
       },
       
       received: (data) => {
-        // Handle BS detection results
-        if (data.bs_detected) {
-          this.displayResult(data)
+        // Handle different types of messages
+        if (data.type === 'transcription') {
+          this.displayTranscription(data)
         }
       }
     })
@@ -121,8 +151,19 @@ export default class extends Controller {
   }
   
   stop() {
-    if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
-      this.mediaRecorder.stop()
+    // Stop recording
+    this.isRecording = false
+    
+    // Clear send interval
+    if (this.sendInterval) {
+      clearInterval(this.sendInterval)
+      this.sendInterval = null
+    }
+    
+    // Disconnect audio nodes
+    if (this.scriptProcessor) {
+      this.scriptProcessor.disconnect()
+      this.scriptProcessor = null
     }
     
     if (this.stream) {
@@ -140,9 +181,11 @@ export default class extends Controller {
       this.subscription = null
     }
     
-    this.isRecording = false
+    // Clear any remaining PCM data
+    this.pcmChunks = []
+    
     this.updateUI(false)
-    this.statusTarget.textContent = "Stopped detecting"
+    this.statusTarget.textContent = "Stopped recording"
     this.updateConnectionStatus(false)
     
     // Clear visualization
@@ -160,7 +203,7 @@ export default class extends Controller {
       this.muteBtnTarget.classList.remove('text-red-500')
       this.muteBtnTarget.classList.add('text-gray-500')
       if (this.isRecording) {
-        this.statusTarget.textContent = "Listening for BS..."
+        this.statusTarget.textContent = "Recording audio..."
       }
     }
   }
@@ -283,9 +326,28 @@ export default class extends Controller {
     await this.start()
   }
   
-  displayResult(data) {
-    // This will be implemented in a future phase
-    console.log("BS detected:", data)
+  
+  displayTranscription(data) {
+    // Show the results section
+    this.resultsTarget.classList.remove("hidden")
+    
+    // Create a new transcription entry
+    const entry = document.createElement("div")
+    entry.className = "mb-4 p-4 bg-gray-50 rounded-lg"
+    entry.innerHTML = `
+      <div class="text-sm text-gray-500 mb-1">
+        ${new Date(data.timestamp).toLocaleTimeString()}
+      </div>
+      <div class="text-gray-800">
+        ${data.text}
+      </div>
+    `
+    
+    // Append to results list
+    this.resultsListTarget.appendChild(entry)
+    
+    // Scroll to bottom to show latest
+    this.resultsListTarget.scrollTop = this.resultsListTarget.scrollHeight
   }
   
   disconnect() {
