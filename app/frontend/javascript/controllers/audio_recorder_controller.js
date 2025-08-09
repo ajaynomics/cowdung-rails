@@ -18,8 +18,6 @@ export default class extends Controller {
     this.isMuted = false
     this.isRecording = false
     this.sessionId = null
-    this.audioChunks = []
-    this.chunkStartTime = null
     
     // Set up canvas for visualization
     this.setupCanvas()
@@ -58,7 +56,6 @@ export default class extends Controller {
       
       // Connect audio pipeline
       source.connect(this.scriptProcessor)
-      this.scriptProcessor.connect(this.audioContext.destination)
       
       // Capture PCM data
       this.scriptProcessor.onaudioprocess = (event) => {
@@ -68,8 +65,7 @@ export default class extends Controller {
         // Convert Float32Array to Int16Array for smaller size
         const pcm16 = new Int16Array(inputData.length)
         for (let i = 0; i < inputData.length; i++) {
-          const s = Math.max(-1, Math.min(1, inputData[i]))
-          pcm16[i] = s < 0 ? s * 0x8000 : s * 0x7FFF
+          pcm16[i] = Math.max(-32768, Math.min(32767, inputData[i] * 32768))
         }
         
         this.pcmChunks.push(pcm16)
@@ -110,7 +106,7 @@ export default class extends Controller {
       
       // Update UI
       this.updateUI(true)
-      this.statusTarget.textContent = "Listening for BS..."
+      this.statusTarget.textContent = "Recording audio..."
       
       // Start visualization
       this.visualize()
@@ -122,7 +118,7 @@ export default class extends Controller {
   
   setupSubscription() {
     this.subscription = consumer.subscriptions.create({
-      channel: "DetectorChannel",
+      channel: "AudioTranscriptionChannel",
       session_id: this.sessionId
     }, {
       connected: () => {
@@ -137,8 +133,6 @@ export default class extends Controller {
         // Handle different types of messages
         if (data.type === 'transcription') {
           this.displayTranscription(data)
-        } else if (data.bs_detected) {
-          this.displayResult(data)
         }
       }
     })
@@ -191,7 +185,7 @@ export default class extends Controller {
     this.pcmChunks = []
     
     this.updateUI(false)
-    this.statusTarget.textContent = "Stopped detecting"
+    this.statusTarget.textContent = "Stopped recording"
     this.updateConnectionStatus(false)
     
     // Clear visualization
@@ -209,7 +203,7 @@ export default class extends Controller {
       this.muteBtnTarget.classList.remove('text-red-500')
       this.muteBtnTarget.classList.add('text-gray-500')
       if (this.isRecording) {
-        this.statusTarget.textContent = "Listening for BS..."
+        this.statusTarget.textContent = "Recording audio..."
       }
     }
   }
@@ -332,10 +326,6 @@ export default class extends Controller {
     await this.start()
   }
   
-  displayResult(data) {
-    // This will be implemented in a future phase
-    console.log("BS detected:", data)
-  }
   
   displayTranscription(data) {
     // Show the results section
@@ -359,7 +349,6 @@ export default class extends Controller {
     // Scroll to bottom to show latest
     this.resultsListTarget.scrollTop = this.resultsListTarget.scrollHeight
   }
-  
   
   disconnect() {
     this.stop()

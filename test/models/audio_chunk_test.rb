@@ -17,23 +17,29 @@ class AudioChunkTest < ActiveSupport::TestCase
     assert_includes chunk2.errors[:sequence], "has already been taken"
   end
 
-  test "ready_for_transcription returns 30 unprocessed chunks" do
-    session_id = "test-session"
+  test "pcm_data returns decoded base64 data" do
+    original_data = "test audio data"
+    encoded_data = Base64.encode64(original_data)
 
-    # Create 35 chunks
-    35.times do |i|
-      AudioChunk.create!(
-        session_id: session_id,
-        data: "chunk#{i}",
-        sequence: i,
-        processed: i < 5 # First 5 are processed
-      )
-    end
+    chunk = AudioChunk.create!(
+      session_id: "test-123",
+      data: encoded_data,
+      sequence: 0
+    )
 
-    ready_chunks = AudioChunk.ready_for_transcription(session_id)
+    assert_equal original_data, chunk.pcm_data
+  end
 
-    assert_equal 30, ready_chunks.count
-    assert_equal 5, ready_chunks.first.sequence
-    assert_equal 34, ready_chunks.last.sequence
+  test "stores format and sample_rate" do
+    chunk = AudioChunk.create!(
+      session_id: "test-123",
+      data: "pcm_data",
+      sequence: 0,
+      format: "pcm16",
+      sample_rate: 44100
+    )
+
+    assert_equal "pcm16", chunk.format
+    assert_equal 44100, chunk.sample_rate
   end
 end
