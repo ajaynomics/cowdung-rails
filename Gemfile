@@ -47,7 +47,7 @@ gem "thruster", require: false
 
 # AI and workflow orchestration
 gem "raix", "~> 1.0"
-gem "ruby-openai", "~> 8.0"
+gem "ruby-openai", "~> 8.2"
 gem "roast-ai", github: "Shopify/roast"
 
 group :development, :test do
